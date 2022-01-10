@@ -1,0 +1,23 @@
+{
+  "name": "bitrise-helper",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "watch": "node watcher.js"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "cron": "^1.8.2",
+    "got": "^11.8.2",
+    "lodash": "^4.17.21",
+    "node-cron": "^3.0.0",
+    "readline-sync": "^1.4.10",
+    "spinnies": "^0.5.1"
+  },
+  "devDependencies": {
+    "p-iteration": "^1.1.8"
+  }
+}
