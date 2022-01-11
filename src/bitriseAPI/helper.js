@@ -1,5 +1,5 @@
 const got = require('got');
-const {ConsoleRed} = require('../utils/consoleColors');
+const {consoleRed} = require('../utils/consoleColors');
 
 const options = {
     headers: {
@@ -19,7 +19,7 @@ const GETRequestWrapper = async (
             {searchParams}
         );
     } catch (error) {
-        console.log(ConsoleRed, `Request encountered the following error: ${error.message}`);
+        console.log(consoleRed, `Request encountered the following error: ${error.message}`);
         return error;
     }
 };

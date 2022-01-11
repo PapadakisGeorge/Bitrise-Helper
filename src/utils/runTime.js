@@ -1,14 +1,22 @@
-const buildTypeAverageRunTime = {
-    'Workflow_Android': 25,
-    'Execute_Android_Tests': 30,
-    'Workflow_IOS': 30,
-    'Execute_IOS_Tests': 40,
-    'Workflow_Android_Edge': 30,
-    'Execute_Android_Edge_Tests': 25,
-    'Workflow_IOS_Edge': 30,
-    'Execute_IOS_Edge_Suite_1_Tests': 40,
-    'Execute_IOS_Edge_Suite_2_Tests': 40,
-    'Workflow_Unit_Tests': 25,
+const {getWorkflowData} = require('../utils/getDataWithOptions');
+const {forEach} = require("p-iteration");
+
+const BITRISE_BUILDS_URL = 'https://api.bitrise.io/v0.1/apps/af50b4926a122ad0/builds';
+
+/**
+ *
+ * @param buildType The name of the workflow the average run time we are looking for.
+ * @returns {Promise<number>} The average run time in minutes
+ */
+const getBuildAverageRunTime = async (buildType) => {
+    const data = await getWorkflowData(BITRISE_BUILDS_URL, buildType, 1);
+    let sumOfTimes = 0;
+    await forEach(data, async (build) => {
+        const startTime = new Date(build.triggered_at);
+        const finishTime = new Date(build.finished_at);
+        sumOfTimes += finishTime - startTime
+    });
+    return Math.trunc(sumOfTimes / (data.length * 60000));
 }
 
 /**
@@ -18,7 +26,7 @@ const buildTypeAverageRunTime = {
 const runTime = (triggerTime) => {
     const currentDate = new Date();
     const triggerTimeFormatted = new Date(triggerTime);
-    return Math.trunc((currentDate.getTime() - triggerTimeFormatted.getTime())/60000);
+    return Math.trunc((currentDate.getTime() - triggerTimeFormatted.getTime()) / 60000);
 };
 
 /**
@@ -26,11 +34,13 @@ const runTime = (triggerTime) => {
  * @param buildType The type of the build.
  * @returns {number} How many minutes are remaining for the build to end.
  */
-const approximateFinish = (triggerTime, buildType) => {
-    return buildTypeAverageRunTime[`${buildType}`] - runTime(triggerTime);
+const approximateFinish = async (triggerTime, buildType) => {
+    const averageRunTime = await getBuildAverageRunTime(buildType);
+    return averageRunTime - runTime(triggerTime);
 }
 
 module.exports = {
     runTime,
-    approximateFinish
+    approximateFinish,
+    getBuildAverageRunTime
 }

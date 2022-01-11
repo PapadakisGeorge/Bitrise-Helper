@@ -1,53 +1,65 @@
-const {approximateFinish} = require('./runTime');
-
 const BITRISE_APP_URL = 'https://app.bitrise.io/build/';
 
 /**
  * @param build An object containing the build data.
+ * @param finishTime The finish time of the build in minutes.
  * @returns {string} The desired text.
  */
-const spinnerText = (build) => {
+const spinnerText = (build, finishTime) => {
     const buildWorkflowID = build.triggered_workflow;
     const buildPartialURL = build.slug;
-    const finishTime = approximateFinish(build.triggered_at, buildWorkflowID);
+    const buildNumber = build.build_number
 
-    return Number(finishTime) > 0 ?
-        `${buildWorkflowID} workflow in progress, approximate finish time ${finishTime} minutes. More info: ${BITRISE_APP_URL}${buildPartialURL}` :
-        `${buildWorkflowID} workflow in progress, will finish soon. More info: ${BITRISE_APP_URL}${buildPartialURL}`
+    if (Number(finishTime) > 1) {
+        return `${buildWorkflowID} workflow (build number ${buildNumber}) in progress, ETC ${finishTime} minutes. More info: ${BITRISE_APP_URL}${buildPartialURL}`
+    } else if (Number(finishTime) < -10) {
+        return `${buildWorkflowID} workflow (build number ${buildNumber}) in progress, but is taking to long. Check if everything is alright here: ${BITRISE_APP_URL}${buildPartialURL}`
+    } else {
+        return `${buildWorkflowID} workflow (build number ${buildNumber}) in progress, will finish soon. More info: ${BITRISE_APP_URL}${buildPartialURL}`
+    }
 }
 
 /**
  * @param build An object containing the build data.
+ * @param finishTime The finish time of the build in minutes.
  * @param spinners The spinners object to add the new spinner.
  */
-const startSpinner = (build, spinners) => {
+const startSpinner = (build, finishTime, spinners) => {
     const buildNumber = build.build_number;
     spinners.add(`spinner-${buildNumber}`, {
-        text: spinnerText(build)
+        text: spinnerText(build, finishTime)
     });
 
 }
 
 /**
  * @param build An object containing the build data.
+ * @param finishTime The finish time of the build in minutes.
  * @param spinners The spinners object to add the new spinner.
  */
-const updateSpinnerText = (build, spinners) => {
+const updateSpinnerText = (build, finishTime, spinners) => {
     const buildNumber = build.build_number;
     spinners.update(`spinner-${buildNumber}`, {
-            text: spinnerText(build),
+            text: spinnerText(build, finishTime),
         }
     );
 }
 
 /**
  * @param buildNumber The build number of the workflow.
+ * @param buildStatus The result of the build.
  * @param buildURL An object with the current builds running.
  * @param spinners The spinners object to add the new spinner.
  */
-const stopSpinner = (buildNumber, buildURL, spinners) => {
+const stopSpinner = (buildNumber, buildStatus, buildURL, spinners) => {
+    const buildStatusFormatted = {
+        '1': 'finished successfully',
+        '2': 'failed',
+        '3': 'was aborted',
+        '4': 'was aborted with success'
+    };
     spinners.succeed(`spinner-${buildNumber}`, {
-            text: `Build ${buildNumber} finished! More info:  ${BITRISE_APP_URL}${buildURL} `,
+            text: `Build ${buildNumber} ${buildStatusFormatted[buildStatus]}! More info: ${BITRISE_APP_URL}${buildURL} `,
             successColor: 'greenBright'
         }
     );
