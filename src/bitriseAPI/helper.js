@@ -19,29 +19,28 @@ const GETRequestWrapper = async (
             {searchParams}
         );
     } catch (error) {
-        console.log(consoleRed, `Request encountered the following error: ${error.message}`);
+        console.log(consoleRed, `Get request encountered the following error: ${error.message}`);
         return error;
     }
 };
 
-// const POSTRequestWrapper = async (
-//         requestName,
-//         url,
-//         payload
-//     ) => {
-//         try {
-//             return got.post(
-//                 url,
-//                 payload
-//             );
-//         } catch (error) {
-//             log.warn(`POST request ${requestName} encountered the following error: ${error.message}`);
-//             return error;
-//         }
-//     }
-// ;
+const POSTRequestWrapper = async (
+        url,
+        payload
+    ) => {
+        try {
+            return got.post(
+                url,
+                {...options, json: payload}
+            );
+        } catch (error) {
+            console.log(consoleRed, `POST request encountered the following error: ${error.message}`);
+            return error;
+        }
+    }
+;
 
 module.exports = {
     GETRequestWrapper,
-    // POSTRequestWrapper
+    POSTRequestWrapper
 }

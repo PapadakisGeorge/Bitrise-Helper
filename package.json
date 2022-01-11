@@ -5,7 +5,8 @@
   "main": "index.js",
   "scripts": {
     "watch": "node watcher.js",
-    "check": "node capacityCheck.js"
+    "check": "node capacityCheck.js",
+    "trigger": "node trigger.js"
   },
   "keywords": [],
   "author": "",
