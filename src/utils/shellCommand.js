@@ -1,17 +1,20 @@
-const {exec} = require('child_process');
+const {spawnSync} = require('child_process');
+const assert = require('assert');
 
 const shellExec = (command) => {
-    exec(command, (error, stdout, stderr) => {
-        if (error) {
-            console.log(`error: ${error.message}`);
-            return;
-        }
-        if (stderr) {
-            console.log(`stderr: ${stderr}`);
-            return;
-        }
-        console.log(`${stdout}`);
+    let cmdOutput = '';
+    const executedCommand = spawnSync(command, {
+        shell: true
     });
+
+    if (executedCommand.status !== 0) {
+        assert.fail(executedCommand.stderr.toString());
+    } else {
+        cmdOutput = executedCommand.stdout.toString().trim();
+        assert.strictEqual((cmdOutput.includes('FAILED') || []).length, 0, cmdOutput);
+    }
+
+    return cmdOutput;
 };
 
 module.exports = {
