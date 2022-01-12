@@ -53,7 +53,7 @@ const updateSpinnerText = (build, finishTime, spinners) => {
  */
 const stopSpinner = (buildNumber, buildStatus, buildURL, spinners) => {
     const buildStatusFormatted = {
-        '1': 'finished successfully',
+        '1': 'succeeded',
         '2': 'failed',
         '3': 'was aborted',
         '4': 'was aborted with success'
