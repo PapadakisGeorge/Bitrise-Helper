@@ -3,6 +3,7 @@ const {
     consoleRed, consoleGreen,
 } = require('./src/utils/consoleColors');
 const readline = require('readline-sync');
+const {WORKFLOWS} = require('./src/model/model');
 
 const {triggerBuild} = require("./src/bitriseAPI/triggerBuild");
 
@@ -10,9 +11,7 @@ const start = async () => {
     let BRANCH;
     let WORKFLOW;
     let SKIP_TESTS;
-    const availableWorkflowsMatrix = ['Workflow_Android', 'Workflow_IOS', 'Workflow_Android_Edge', 'Workflow_IOS_Edge'];
-    let availableWorkflows = '';
-    availableWorkflowsMatrix.forEach((workflow, index) => availableWorkflows = index === availableWorkflowsMatrix.length - 1 ? availableWorkflows.concat(`${workflow}`) : availableWorkflows.concat(`${workflow}, `));
+    const availableWorkflowsMatrix = Object.values(WORKFLOWS);
     while (!BRANCH) {
         BRANCH = readline.question(`Enter the branch name you want to trigger:\n`,);
         if (!BRANCH) {
@@ -20,6 +19,10 @@ const start = async () => {
         }
         while (!WORKFLOW) {
             WORKFLOW = readline.keyInSelect(availableWorkflowsMatrix,`Which workflow do you want to trigger?`);
+            if(WORKFLOW === -1) {
+             console.log('Aborting trigger...');
+             process.exit(0);
+            }
             while (!SKIP_TESTS) {
                 SKIP_TESTS = readline.question(`Skip tests? (y/n):\n`, {
                     limit: ['y', 'n'],
