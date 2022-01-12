@@ -18,11 +18,12 @@ const start = async () => {
             console.log(consoleRed, 'You need to specify a branch!')
         }
         while (!WORKFLOW) {
-            WORKFLOW = readline.keyInSelect(availableWorkflowsMatrix, `Which workflow do you want to trigger?`);
-            if (WORKFLOW === -1) {
+            let WORKFLOW_INPUT = readline.keyInSelect(availableWorkflowsMatrix, `Which workflow do you want to trigger?`);
+            if (WORKFLOW_INPUT === -1) {
                 console.log(consoleBlue, 'Aborting trigger...');
                 process.exit(0)
             }
+            WORKFLOW = availableWorkflowsMatrix[WORKFLOW_INPUT];
             while (!SKIP_TESTS) {
                 SKIP_TESTS = readline.question(`Skip tests? (y/n):\n`, {
                     limit: ['y', 'n'],

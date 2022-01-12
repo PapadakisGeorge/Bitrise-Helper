@@ -1,7 +1,8 @@
 const {
     consoleGreen,
     consoleRed,
-    consoleCyan
+    consoleCyan,
+    consoleBlue
 } = require('./src/utils/consoleColors');
 const readline = require('readline-sync');
 const _ = require('lodash');
@@ -9,22 +10,22 @@ const _ = require('lodash');
 const {forEach} = require('p-iteration');
 const {getBuildAverageRunTime, approximateFinish} = require('./src/utils/runTime');
 const {getData} = require('./src/bitriseAPI/dataFetcher');
+const {WORKFLOWS} = require('./src/model/model');
 
 const start = async () => {
     //Control input.
-    const availableWorkflowsMatrix = ['Workflow_Android', 'Workflow_IOS', 'Workflow_Android_Edge', 'Workflow_IOS_Edge'];
-    let availableWorkflows = '';
-    availableWorkflowsMatrix.forEach((workflow, index) => availableWorkflows = index === availableWorkflowsMatrix.length - 1 ? availableWorkflows.concat(`${workflow}`) : availableWorkflows.concat(`${workflow}, `));
-    const workflow = readline.question(`Choose one or more of the following workflows you wish to trigger: ${availableWorkflows}\n`, {
-        limit: availableWorkflowsMatrix,
-        limitMessage: `Not a valid workflow! Available workflows are: ${availableWorkflows}`
-    });
-    // const details = readline.question('Want to see details? y/n\n', {
-    //     limit: ['y', 'n'],
-    //     limitMessage: 'Please type y or n'
-    // });
+    let WORKFLOW;
+    const availableWorkflowsMatrix = Object.values(WORKFLOWS);
 
-// Start the actual work.
+    while (!WORKFLOW) {
+        let WORKFLOW_INPUT = readline.keyInSelect(availableWorkflowsMatrix, `Which workflow do you want to trigger?`);
+        if (WORKFLOW_INPUT === -1) {
+            console.log(consoleBlue, 'Aborting trigger...');
+            process.exit(0)
+        }
+        WORKFLOW = availableWorkflowsMatrix[WORKFLOW_INPUT];
+    }
+    // Start the actual work.
     let workflowData = {}
 
     const reservedSessions = {
@@ -83,11 +84,11 @@ const start = async () => {
             return false
         }
     }
-    await getTimeAndReservedSessions(workflow);
+    await getTimeAndReservedSessions(WORKFLOW);
     await forEach(filteredBuilds, async (build) => {
         const buildName = build.triggered_workflow;
         const approximateEndTime = await approximateFinish(build.triggered_at, buildName);
-        if (buildName.includes('Execute') && Number(approximateEndTime) > Number(workflowData[workflow].approximateTriggerTime)) {
+        if (buildName.includes('Execute') && Number(approximateEndTime) > Number(workflowData[WORKFLOW].approximateTriggerTime)) {
             occupiedSessions += workflowData[buildName].reservedSessions;
             saveBuildData(build, approximateEndTime);
         } else if (buildName.includes('Workflow')) {
@@ -100,11 +101,12 @@ const start = async () => {
     Object.keys(buildsThatAffect).forEach((buildNumber) => {
         const buildName = buildsThatAffect[buildNumber].buildName;
         const reserveTense = buildName.includes('Execute') ? 'reserves' : 'will reserve';
-        console.log(consoleCyan, `${buildsThatAffect[buildNumber].buildName} with build number ${buildNumber} ${reserveTense} ${buildsThatAffect[buildNumber].sessions} sessions and will end in about ${buildsThatAffect[buildNumber].finishTime} minutes.`);
+        const finishTimeText = buildsThatAffect[buildNumber].finishTime > 1 ? `in about ${buildsThatAffect[buildNumber].finishTime} minutes.` : 'soon.'
+        console.log(consoleCyan, `${buildsThatAffect[buildNumber].buildName} with build number ${buildNumber} ${reserveTense} ${buildsThatAffect[buildNumber].sessions} sessions and will end ${finishTimeText}`);
     });
 
-    if (occupiedSessions + Number(workflowData[workflow].reservedSessions) > SESSIONS_LIMIT) console.log(consoleRed, `Workflow ${workflow} should not be triggered at the moment :( Estimated sessions (with your build) ${occupiedSessions + Number(workflowData[workflow].reservedSessions)}`);
-    else console.log(consoleGreen, `${workflow} can be triggered!!!`);
+    if (occupiedSessions + Number(workflowData[WORKFLOW].reservedSessions) > SESSIONS_LIMIT) console.log(consoleRed, `Workflow ${WORKFLOW} should not be triggered at the moment :( Estimated sessions (with your build) ${occupiedSessions + Number(workflowData[WORKFLOW].reservedSessions)}`);
+    else console.log(consoleGreen, `${WORKFLOW} can be triggered!!!`);
 }
 
 (async () => {
