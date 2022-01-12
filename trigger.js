@@ -19,10 +19,7 @@ const start = async () => {
             console.log(consoleRed, 'You need to specify a branch!')
         }
         while (!WORKFLOW) {
-            WORKFLOW = readline.question(`Which workflow do you want to trigger?\n`, {
-                limit: availableWorkflowsMatrix,
-                limitMessage: `Not a valid workflow! Available workflows are: ${availableWorkflows}`
-            });
+            WORKFLOW = readline.keyInSelect(availableWorkflowsMatrix,`Which workflow do you want to trigger?`);
             while (!SKIP_TESTS) {
                 SKIP_TESTS = readline.question(`Skip tests? (y/n):\n`, {
                     limit: ['y', 'n'],
