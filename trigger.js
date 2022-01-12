@@ -18,10 +18,10 @@ const start = async () => {
             console.log(consoleRed, 'You need to specify a branch!')
         }
         while (!WORKFLOW) {
-            WORKFLOW = readline.keyInSelect(availableWorkflowsMatrix,`Which workflow do you want to trigger?`);
-            if(WORKFLOW === -1) {
-             console.log('Aborting trigger...');
-             process.exit(0);
+            WORKFLOW = readline.keyInSelect(availableWorkflowsMatrix, `Which workflow do you want to trigger?`);
+            if (WORKFLOW === -1) {
+                console.log(consoleBlue, 'Aborting trigger...');
+                process.exit(0)
             }
             while (!SKIP_TESTS) {
                 SKIP_TESTS = readline.question(`Skip tests? (y/n):\n`, {
@@ -57,7 +57,7 @@ const start = async () => {
     let response = await triggerBuild(BITRISE_BUILDS_URL, payload);
     if (response.statusCode > 201) console.log(consoleRed, 'Something went wrong, try again :(')
     else console.log(consoleGreen, `Build triggered successfully, more info: ${JSON.parse(response.body).build_url}`)
-        }
+}
 
 (async () => {
     await start();
