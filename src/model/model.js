@@ -5,6 +5,13 @@ const WORKFLOWS = {
     WORKFLOW_IOS_EDGE:'Workflow_IOS_Edge'
 }
 
+const YES_OPTIONS = ['yes','Yes','YES','Y','y'];
+const NO_OPTIONS = ['no','No','NO','N','n'];
+const YES_NO_OPTIONS = [...YES_OPTIONS,...NO_OPTIONS];
+
 module.exports= {
-    WORKFLOWS
+    WORKFLOWS,
+    YES_OPTIONS,
+    NO_OPTIONS,
+    YES_NO_OPTIONS
 }

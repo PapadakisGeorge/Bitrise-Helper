@@ -10,7 +10,7 @@ const _ = require('lodash');
 const {forEach} = require('p-iteration');
 const {getBuildAverageRunTime, approximateFinish} = require('../utils/runTime');
 const {getData} = require('./dataFetcher');
-const {WORKFLOWS} = require('../model/model');
+const { WORKFLOWS, YES_NO_OPTIONS, YES_OPTIONS, NO_OPTIONS } = require('../model/model');
 const {triggerStart} = require('./triggerStart');
 
 const capacityCheckStart = async () => {
@@ -113,14 +113,14 @@ const capacityCheckStart = async () => {
         let shouldTriggerBuild;
         while (!shouldTriggerBuild) {
             shouldTriggerBuild = readline.question(`Would you like to trigger the ${WORKFLOW}? (y/n):\n`, {
-                limit: ['y', 'n'],
+                limit: YES_NO_OPTIONS,
                 limitMessage: `Type y or n!`
             });
         }
 
-        if(shouldTriggerBuild === 'n') {
+        if(NO_OPTIONS.includes(shouldTriggerBuild)) {
             process.exit(0);
-        } else if(shouldTriggerBuild === 'y') {
+        } else if(YES_OPTIONS.includes(shouldTriggerBuild)) {
             await triggerStart(WORKFLOW);
         }
     }

@@ -3,7 +3,7 @@ const {
     consoleBlue,
     consoleRed, consoleGreen,
 } = require('../utils/consoleColors');
-const {WORKFLOWS} = require('../model/model');
+const { WORKFLOWS, YES_NO_OPTIONS, YES_OPTIONS, NO_OPTIONS } = require('../model/model');
 
 const { triggerBuild } = require("./triggerBuild");
 const { watcherStart } = require("./watcherStart");
@@ -30,13 +30,13 @@ const triggerStart = async (initialWorkflow='') => {
         }
         while (!SKIP_TESTS) {
                 SKIP_TESTS = readline.question(`Skip tests? (y/n):\n`, {
-                    limit: ['y', 'n'],
+                    limit: YES_NO_OPTIONS,
                     limitMessage: `Type y or n!`
                 });
             }
 
 
-        const skippingTestsText = SKIP_TESTS === 'y' ? 'Tests will be skipped' : 'Tests will run'
+        const skippingTestsText = YES_OPTIONS.includes(SKIP_TESTS) ? 'Tests will be skipped' : 'Tests will run'
         console.log(consoleBlue, `Triggering ${WORKFLOW} for branch ${BRANCH}. ${skippingTestsText}`);
     }
 
@@ -54,7 +54,7 @@ const triggerStart = async (initialWorkflow='') => {
                 {
                     "is_expand": true,
                     "mapped_to": "SKIP_TESTS",
-                    "value": SKIP_TESTS === 'y' ? "true" : "false"
+                    "value": YES_OPTIONS.includes(SKIP_TESTS) ? "true" : "false"
                 },
             ]
         }
@@ -67,14 +67,14 @@ const triggerStart = async (initialWorkflow='') => {
         let shouldWatchBuilds;
         while(!shouldWatchBuilds){
             shouldWatchBuilds = readline.question(`Would you like to watch the build? (y/n):\n`, {
-                limit: ['y', 'n'],
+                limit: YES_NO_OPTIONS,
                 limitMessage: `Type y or n!`
             });
         }
 
-        if(shouldWatchBuilds === 'n') {
+        if(NO_OPTIONS.includes(shouldWatchBuilds)) {
             process.exit(0);
-        } else if (shouldWatchBuilds === 'y') {
+        } else if (YES_OPTIONS.includes(shouldWatchBuilds)) {
             await watcherStart(BRANCH)
         }
     }
