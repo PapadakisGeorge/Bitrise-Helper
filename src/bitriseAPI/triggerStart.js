@@ -3,14 +3,15 @@ const {
     consoleBlue,
     consoleRed, consoleGreen,
 } = require('../utils/consoleColors');
-const { WORKFLOWS, YES_NO_OPTIONS, YES_OPTIONS, NO_OPTIONS } = require('../model/model');
+const {WORKFLOWS, YES_NO_OPTIONS, YES_OPTIONS, NO_OPTIONS} = require('../model/model');
 
-const { triggerBuild } = require("./triggerBuild");
-const { watcherStart } = require("./watcherStart");
+const {triggerBuild} = require("./triggerBuild");
+const {watcherStart} = require("./watcherStart");
+const {createPayload} = require("../utils/createPayload");
 
-const triggerStart = async (initialWorkflow='') => {
+const triggerStart = async (initialWorkflow = '') => {
     let BRANCH;
-    let WORKFLOW=initialWorkflow;
+    let WORKFLOW = initialWorkflow;
     let SKIP_TESTS;
     const availableWorkflowsMatrix = Object.values(WORKFLOWS);
     while (!BRANCH) {
@@ -18,7 +19,7 @@ const triggerStart = async (initialWorkflow='') => {
         if (!BRANCH) {
             console.log(consoleRed, 'You need to specify a branch!')
         }
-        if(!initialWorkflow){
+        if (!initialWorkflow) {
             while (!WORKFLOW) {
                 let WORKFLOW_INPUT = readline.keyInSelect(availableWorkflowsMatrix, `Which workflow do you want to trigger?`);
                 if (WORKFLOW_INPUT === -1) {
@@ -29,50 +30,42 @@ const triggerStart = async (initialWorkflow='') => {
             }
         }
         while (!SKIP_TESTS) {
-                SKIP_TESTS = readline.question(`Skip tests? (y/n):\n`, {
-                    limit: YES_NO_OPTIONS,
-                    limitMessage: `Type y or n!`
-                });
-            }
+            SKIP_TESTS = readline.question(`Skip tests? (y/n):\n`, {
+                limit: YES_NO_OPTIONS,
+                limitMessage: `Type y or n!`
+            });
+        }
 
 
         const skippingTestsText = YES_OPTIONS.includes(SKIP_TESTS) ? 'Tests will be skipped' : 'Tests will run'
         console.log(consoleBlue, `Triggering ${WORKFLOW} for branch ${BRANCH}. ${skippingTestsText}`);
     }
 
-    //Create payload
-    const BITRISE_BUILDS_URL = 'https://api.bitrise.io/v0.1/apps/af50b4926a122ad0/builds';
-    const payload = {
-        "hook_info": {
-            "type": "bitrise"
+    const envVariables = [
+        {
+            "is_expand": true,
+            "mapped_to": "SKIP_TESTS",
+            "value": YES_OPTIONS.includes(SKIP_TESTS) ? "true" : "false"
         },
-        "build_params": {
-            "branch": `${BRANCH}`,
-            "workflow_id": `${WORKFLOW}`,
-            "base_repository_url": "https://github.com/camelotls/ie-native-app",
-            "environments": [
-                {
-                    "is_expand": true,
-                    "mapped_to": "SKIP_TESTS",
-                    "value": YES_OPTIONS.includes(SKIP_TESTS) ? "true" : "false"
-                },
-            ]
-        }
-    }
-    let response = await triggerBuild(BITRISE_BUILDS_URL, payload);
-    if (response.statusCode > 201) {
+    ]
+    const payload = createPayload(BRANCH, WORKFLOW, envVariables);
+
+    let response = await triggerBuild(payload);
+    if
+    (response.statusCode > 201
+    ) {
         console.log(consoleRed, 'Something went wrong, try again :(')
     } else {
         console.log(consoleGreen, `Build triggered successfully, more info: ${JSON.parse(response.body).build_url}`);
         let shouldWatchBuilds;
-        while(!shouldWatchBuilds){
+        while (!shouldWatchBuilds) {
             shouldWatchBuilds = readline.question(`Would you like to watch the build? (y/n):\n`, {
                 limit: YES_NO_OPTIONS,
                 limitMessage: `Type y or n!`
             });
         }
 
-        if(NO_OPTIONS.includes(shouldWatchBuilds)) {
+        if (NO_OPTIONS.includes(shouldWatchBuilds)) {
             process.exit(0);
         } else if (YES_OPTIONS.includes(shouldWatchBuilds)) {
             await watcherStart(BRANCH)
@@ -80,6 +73,6 @@ const triggerStart = async (initialWorkflow='') => {
     }
 }
 
-module.exports= {
+module.exports = {
     triggerStart
 }

@@ -38,7 +38,6 @@ const POSTRequestWrapper = async (
             return error;
         }
     }
-;
 
 module.exports = {
     GETRequestWrapper,
