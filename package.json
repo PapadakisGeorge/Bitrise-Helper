@@ -6,7 +6,8 @@
   "scripts": {
     "watch": "node watcher.js",
     "check": "node capacityCheck.js",
-    "trigger": "node trigger.js"
+    "trigger": "node trigger.js",
+    "abort": "node abort.js"
   },
   "keywords": [],
   "author": "",
@@ -20,6 +21,7 @@
     "spinnies": "^0.5.1"
   },
   "devDependencies": {
-    "p-iteration": "^1.1.8"
+    "p-iteration": "^1.1.8",
+    "prettier-eslint": "11.0.0"
   }
 }
