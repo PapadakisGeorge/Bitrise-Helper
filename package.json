@@ -6,7 +6,8 @@
   "scripts": {
     "watch": "node watcher.js",
     "check": "node capacityCheck.js",
-    "trigger": "node trigger.js"
+    "trigger": "node trigger.js",
+    "test": "jest"
   },
   "keywords": [],
   "author": "",
@@ -20,6 +21,7 @@
     "spinnies": "^0.5.1"
   },
   "devDependencies": {
+    "jest": "^27.4.7",
     "p-iteration": "^1.1.8"
   }
 }

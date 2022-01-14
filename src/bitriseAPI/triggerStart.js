@@ -7,7 +7,7 @@ const {WORKFLOWS, YES_NO_OPTIONS, YES_OPTIONS, NO_OPTIONS} = require('../model/m
 
 const {triggerBuild} = require("./triggerBuild");
 const {watcherStart} = require("./watcherStart");
-const {createPayload} = require("../utils/createPayload");
+const {createTriggerPayload} = require("../utils/createTriggerPayload");
 
 const triggerStart = async (initialWorkflow = '') => {
     let BRANCH;
@@ -48,7 +48,7 @@ const triggerStart = async (initialWorkflow = '') => {
             "value": YES_OPTIONS.includes(SKIP_TESTS) ? "true" : "false"
         },
     ]
-    const payload = createPayload(BRANCH, WORKFLOW, envVariables);
+    const payload = createTriggerPayload(BRANCH, WORKFLOW, envVariables);
 
     let response = await triggerBuild(payload);
     if
