@@ -51,7 +51,7 @@ const updateSpinnerText = (build, finishTime, spinners) => {
  * @param buildURL An object with the current builds running.
  * @param spinners The spinners object to add the new spinner.
  */
-const stopSpinner = (buildNumber, buildStatus, buildURL, spinners) => {
+const stopSpinner = (buildNumber, buildType, buildStatus, buildURL, spinners) => {
     const buildStatusFormatted = {
         '1': 'succeeded',
         '2': 'failed',
@@ -59,7 +59,7 @@ const stopSpinner = (buildNumber, buildStatus, buildURL, spinners) => {
         '4': 'was aborted with success'
     };
     spinners.succeed(`spinner-${buildNumber}`, {
-            text: `Build ${buildNumber} ${buildStatusFormatted[buildStatus]}! More info: ${BITRISE_APP_URL}${buildURL} `,
+            text: `${buildType} ${buildNumber} ${buildStatusFormatted[buildStatus]}! More info: ${BITRISE_APP_URL}${buildURL} `,
             successColor: 'greenBright'
         }
     );

@@ -72,7 +72,7 @@ const watcherStart = async (initialBranch = '') => {
 
                 if (buildData.status !== 0) {
                     const buildURL = currentBuilds[buildNumber].url;
-                    stopSpinner(buildNumber, buildData.status, buildURL, spinners);
+                    stopSpinner(buildNumber, buildData.triggered_workflow, buildData.status, buildURL, spinners);
                     delete currentBuilds[buildNumber];
                     shellExec('osascript -e "display notification \\"Build finished!\\" with title \\"BITRISE BUILD\\""');
                     shellExec('say Builds finished!');
