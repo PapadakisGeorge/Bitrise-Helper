@@ -6,7 +6,7 @@ const {triggerBuild} = require("./triggerBuild");
 /**
  * @param builds A list with each builds' desired branch, workflow and environmental variables.
  */
-const triggerBuildMultipleBuilds = async (builds) => {
+const triggerMultipleBuilds = async (builds) => {
     for (const build of builds) {
         const [branch, workflow, envVariables] = build;
         const payload = createPayload(branch, workflow, envVariables);
@@ -19,5 +19,5 @@ const triggerBuildMultipleBuilds = async (builds) => {
 
 
 module.exports = {
-    triggerBuildMultipleBuilds
+    triggerMultipleBuilds
 }

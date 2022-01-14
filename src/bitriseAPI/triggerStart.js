@@ -41,7 +41,6 @@ const triggerStart = async (initialWorkflow = '') => {
         console.log(consoleBlue, `Triggering ${WORKFLOW} for branch ${BRANCH}. ${skippingTestsText}`);
     }
 
-    //Create payload
     const envVariables = [
         {
             "is_expand": true,
@@ -50,23 +49,7 @@ const triggerStart = async (initialWorkflow = '') => {
         },
     ]
     const payload = createPayload(BRANCH, WORKFLOW, envVariables);
-    // const payload = {
-    //     "hook_info": {
-    //         "type": "bitrise"
-    //     },
-    //     "build_params": {
-    //         "branch": `${BRANCH}`,
-    //         "workflow_id": `${WORKFLOW}`,
-    //         "base_repository_url": "https://github.com/camelotls/ie-native-app",
-    //         "environments": [
-    //             {
-    //                 "is_expand": true,
-    //                 "mapped_to": "SKIP_TESTS",
-    //                 "value": YES_OPTIONS.includes(SKIP_TESTS) ? "true" : "false"
-    //             },
-    //         ]
-    //     }
-    // }
+
     let response = await triggerBuild(payload);
     if
     (response.statusCode > 201
