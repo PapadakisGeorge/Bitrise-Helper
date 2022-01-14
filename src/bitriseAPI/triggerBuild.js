@@ -2,14 +2,12 @@ const {POSTRequestWrapper} = require('./helper');
 const {consoleRed} = require('../utils/consoleColors');
 
 /**
- * @param url The url the call will use.
  * @param payload The payload of the call.
- * @returns {Promise<Response<string>|*|undefined>} The response of the call.
  */
-const triggerBuild = async (url, payload) => {
+const triggerBuild = async (payload) => {
     try {
         return await POSTRequestWrapper(
-            url,
+            'https://api.bitrise.io/v0.1/apps/af50b4926a122ad0/builds',
             payload);
     } catch (error) {
         console.log(consoleRed, `Request encountered the following error while posting data with error: ${error.message}`);
