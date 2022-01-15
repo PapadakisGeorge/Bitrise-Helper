@@ -21,10 +21,21 @@ const RESERVED_SESSIONS = {
     Execute_IOS_Edge_Suite_2_Tests: 15,
 }
 
+const consoleRed = '\x1b[31m%s\x1b[0m'
+const consoleGreen = '\x1b[32m%s\x1b[0m'
+const consoleYellow = '\x1b[33m%s\x1b[0m'
+const consoleBlue = '\x1b[34m%s\x1b[0m'
+const consoleCyan = '\x1b[36m%s\x1b[0m'
+
 module.exports= {
     WORKFLOWS,
     YES_OPTIONS,
     NO_OPTIONS,
     YES_NO_OPTIONS,
-    RESERVED_SESSIONS
+    RESERVED_SESSIONS,
+    consoleRed,
+    consoleGreen,
+    consoleYellow,
+    consoleBlue,
+    consoleCyan
 }

@@ -3,7 +3,7 @@ const {
     consoleRed,
     consoleCyan,
     consoleBlue
-} = require('../utils/consoleColors');
+} = require('../model/model');
 const readline = require('readline-sync');
 const _ = require('lodash');
 

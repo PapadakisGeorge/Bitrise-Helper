@@ -1,5 +1,6 @@
-const {validateInputs} = require("./validateInputs");
-const {consoleRed} = require('../utils/consoleColors')
+const {validateInputs} = require('./validateInputs');
+const {consoleRed} = require('../model/model');
+
 /**
  *
  * @param branch Branch name, type should be string.

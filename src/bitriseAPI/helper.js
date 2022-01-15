@@ -1,5 +1,5 @@
 const got = require('got');
-const {consoleRed} = require('../utils/consoleColors');
+const {consoleRed} = require('../model/model');
 
 const options = {
     headers: {

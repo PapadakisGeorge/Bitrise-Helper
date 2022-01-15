@@ -14,6 +14,40 @@ const VALID_INPUTS = {
             "base_repository_url": "https://github.com/camelotls/ie-native-app",
             "environments": ['Valid workflow env variable 1', 'Valid workflow env variable 2']
         }
+    },
+    schema: {
+        type: 'object',
+        properties: {
+            hook_info: {
+                type: 'object',
+                properties: {
+                    type: {
+                        type: 'string',
+
+                    }
+                }
+            },
+            build_params: {
+                type: 'object',
+                properties: {
+                    branch: {
+                        type: 'string'
+                    },
+                    workflow_id: {
+                        type: 'string'
+                    },
+                    base_repository_url: {
+                        type: 'string'
+                    },
+                    environments: {
+                        type: 'array',
+                        items: {
+                            type: 'string'
+                        }
+                    },
+                }
+            }
+        }
     }
 }
 

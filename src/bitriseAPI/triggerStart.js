@@ -2,7 +2,7 @@ const readline = require('readline-sync');
 const {
     consoleBlue,
     consoleRed, consoleGreen,
-} = require('../utils/consoleColors');
+} = require('../model/model');
 const {WORKFLOWS, YES_NO_OPTIONS, YES_OPTIONS, NO_OPTIONS} = require('../model/model');
 
 const {triggerBuild} = require("./triggerBuild");
