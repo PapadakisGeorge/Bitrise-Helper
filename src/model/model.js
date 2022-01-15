@@ -21,10 +21,19 @@ const RESERVED_SESSIONS = {
     Execute_IOS_Edge_Suite_2_Tests: 15,
 }
 
+const STATUSES = Object.freeze({
+    'running': 0,
+    'successful': 1,
+    'failed': 2,
+    'aborted with failure': 3,
+    'aborted with success': 4,
+});
+
 module.exports= {
     WORKFLOWS,
     YES_OPTIONS,
     NO_OPTIONS,
     YES_NO_OPTIONS,
+    STATUSES,
     RESERVED_SESSIONS
 }
