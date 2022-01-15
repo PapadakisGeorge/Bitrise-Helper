@@ -1,9 +1,9 @@
 const readline = require('readline-sync');
 const {
-    consoleBlue,
-    consoleRed, consoleGreen,
-} = require('../model/model');
-const {WORKFLOWS, YES_NO_OPTIONS, YES_OPTIONS, NO_OPTIONS} = require('../model/model');
+    CONSOLE_BLUE,
+    CONSOLE_RED, CONSOLE_GREEN,
+} = require('../models/model');
+const {WORKFLOWS, YES_NO_OPTIONS, YES_OPTIONS, NO_OPTIONS} = require('../models/model');
 
 const {triggerBuild} = require("./triggerBuild");
 const {watcherStart} = require("./watcherStart");
@@ -17,13 +17,13 @@ const triggerStart = async (initialWorkflow = '') => {
     while (!BRANCH) {
         BRANCH = readline.question(`Enter the branch name you want to trigger:\n`,);
         if (!BRANCH) {
-            console.log(consoleRed, 'You need to specify a branch!')
+            console.log(CONSOLE_RED, 'You need to specify a branch!')
         }
         if (!initialWorkflow) {
             while (!WORKFLOW) {
                 let WORKFLOW_INPUT = readline.keyInSelect(availableWorkflowsMatrix, `Which workflow do you want to trigger?`);
                 if (WORKFLOW_INPUT === -1) {
-                    console.log(consoleBlue, 'Aborting trigger...');
+                    console.log(CONSOLE_BLUE, 'Aborting trigger...');
                     process.exit(0)
                 }
                 WORKFLOW = availableWorkflowsMatrix[WORKFLOW_INPUT];
@@ -38,7 +38,7 @@ const triggerStart = async (initialWorkflow = '') => {
 
 
         const skippingTestsText = YES_OPTIONS.includes(SKIP_TESTS) ? 'Tests will be skipped' : 'Tests will run'
-        console.log(consoleBlue, `Triggering ${WORKFLOW} for branch ${BRANCH}. ${skippingTestsText}`);
+        console.log(CONSOLE_BLUE, `Triggering ${WORKFLOW} for branch ${BRANCH}. ${skippingTestsText}`);
     }
 
     const envVariables = [
@@ -54,9 +54,9 @@ const triggerStart = async (initialWorkflow = '') => {
     if
     (response.statusCode > 201
     ) {
-        console.log(consoleRed, 'Something went wrong, try again :(')
+        console.log(CONSOLE_RED, 'Something went wrong, try again :(')
     } else {
-        console.log(consoleGreen, `Build triggered successfully, more info: ${JSON.parse(response.body).build_url}`);
+        console.log(CONSOLE_GREEN, `Build triggered successfully, more info: ${JSON.parse(response.body).build_url}`);
         let shouldWatchBuilds;
         while (!shouldWatchBuilds) {
             shouldWatchBuilds = readline.question(`Would you like to watch the build? (y/n):\n`, {

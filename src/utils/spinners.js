@@ -1,5 +1,3 @@
-const BITRISE_APP_URL = 'https://app.bitrise.io/build/';
-
 /**
  * @param build An object containing the build data.
  * @param finishTime The finish time of the build in minutes.
@@ -11,11 +9,11 @@ const spinnerText = (build, finishTime) => {
     const buildNumber = build.build_number
 
     if (Number(finishTime) > 1) {
-        return `${buildWorkflowID} workflow (build number ${buildNumber}) in progress, ETC ${finishTime} minutes. More info: ${BITRISE_APP_URL}${buildPartialURL}`
+        return `${buildWorkflowID} workflow (build number ${buildNumber}) in progress, ETC ${finishTime} minutes. More info: ${process.env.BITRISE_APP_URL}${buildPartialURL}`
     } else if (Number(finishTime) < -10) {
-        return `${buildWorkflowID} workflow (build number ${buildNumber}) in progress, but is taking to long. Check if everything is alright here: ${BITRISE_APP_URL}${buildPartialURL}`
+        return `${buildWorkflowID} workflow (build number ${buildNumber}) in progress, but is taking to long. Check if everything is alright here: ${process.env.BITRISE_APP_URL}${buildPartialURL}`
     } else {
-        return `${buildWorkflowID} workflow (build number ${buildNumber}) in progress, will finish soon. More info: ${BITRISE_APP_URL}${buildPartialURL}`
+        return `${buildWorkflowID} workflow (build number ${buildNumber}) in progress, will finish soon. More info: ${process.env.BITRISE_APP_URL}${buildPartialURL}`
     }
 }
 
@@ -47,6 +45,7 @@ const updateSpinnerText = (build, finishTime, spinners) => {
 
 /**
  * @param buildNumber The build number of the workflow.
+ * @param buildType The name of the workflow.
  * @param buildStatus The result of the build.
  * @param buildURL An object with the current builds running.
  * @param spinners The spinners object to add the new spinner.
@@ -59,7 +58,7 @@ const stopSpinner = (buildNumber, buildType, buildStatus, buildURL, spinners) =>
         '4': 'was aborted with success'
     };
     spinners.succeed(`spinner-${buildNumber}`, {
-            text: `${buildType} ${buildNumber} ${buildStatusFormatted[buildStatus]}! More info: ${BITRISE_APP_URL}${buildURL} `,
+            text: `${buildType} ${buildNumber} ${buildStatusFormatted[buildStatus]}! More info: ${process.env.BITRISE_APP_URL}${buildURL} `,
             successColor: 'greenBright'
         }
     );

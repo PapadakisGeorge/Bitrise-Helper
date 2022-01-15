@@ -1,5 +1,5 @@
 const {validateInputs} = require('./validateInputs');
-const {consoleRed} = require('../model/model');
+const {CONSOLE_RED} = require('../models/model');
 
 /**
  *
@@ -27,7 +27,7 @@ const createTriggerPayload = (branch, workflow, envVariables) => {
             }
         }
     } catch (error) {
-        console.log(consoleRed, 'Error while creating the payload');
+        console.log(CONSOLE_RED, 'Error while creating the payload');
         return error;
     }
 }
