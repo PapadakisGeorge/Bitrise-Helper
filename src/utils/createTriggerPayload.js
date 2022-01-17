@@ -1,5 +1,5 @@
 const {validateInputs} = require('./validateInputs');
-const {CONSOLE_RED} = require('../models/model');
+const {CONSOLE_RED} = require('../model/model');
 
 /**
  *
@@ -14,7 +14,7 @@ const createTriggerPayload = (branch, workflow, envVariables) => {
             {value: branch, desiredType: 'string'},
             {value: workflow, desiredType: 'string'},
             {value: envVariables, desiredType: 'array'}
-        ])
+        ]);
         return {
             "hook_info": {
                 "type": "bitrise"

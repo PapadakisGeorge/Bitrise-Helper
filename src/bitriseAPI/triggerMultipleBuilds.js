@@ -1,4 +1,4 @@
-const {CONSOLE_RED, CONSOLE_GREEN} = require('../models/model');
+const {CONSOLE_RED, CONSOLE_GREEN} = require('../model/model');
 const {createTriggerPayload} = require("../utils/createTriggerPayload");
 const {triggerBuild} = require("./triggerBuild");
 

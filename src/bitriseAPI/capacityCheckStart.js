@@ -3,14 +3,14 @@ const {
     CONSOLE_RED,
     CONSOLE_CYAN,
     CONSOLE_BLUE
-} = require('../models/model');
+} = require('../model/model');
 const readline = require('readline-sync');
 const _ = require('lodash');
 
 const {forEach} = require('p-iteration');
 const {getBuildAverageRunTime, approximateFinish} = require('../utils/runTime');
 const {getData} = require('./dataFetcher');
-const { WORKFLOWS, YES_NO_OPTIONS, YES_OPTIONS, NO_OPTIONS, RESERVED_SESSIONS } = require('../models/model');
+const { WORKFLOWS, YES_NO_OPTIONS, YES_OPTIONS, NO_OPTIONS, RESERVED_SESSIONS } = require('../model/model');
 const {triggerStart} = require('./triggerStart');
 
 const capacityCheckStart = async () => {

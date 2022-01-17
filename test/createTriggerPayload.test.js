@@ -1,7 +1,6 @@
 const {createTriggerPayload} = require('../src/utils/createTriggerPayload');
 const expect = require('expect');
 const {matchers} = require('jest-json-schema');
-
 expect.extend(matchers);
 
 const {
@@ -9,7 +8,7 @@ const {
     INVALID_INPUTS
 } = require('./mocks/createTriggerPayload.mocks')
 
-describe('The function that creates the payload for triggering a build works as intented', () =>{
+describe('The function that creates the payload for triggering a build works as intended', () => {
     it('Given valid inputs the correct payload is created', () => {
         expect(createTriggerPayload(VALID_INPUTS.branch, VALID_INPUTS.workflow, VALID_INPUTS.envVariables)).toStrictEqual(VALID_INPUTS.expectedResult);
     });
@@ -18,9 +17,9 @@ describe('The function that creates the payload for triggering a build works as 
         expect(createTriggerPayload(VALID_INPUTS.branch, VALID_INPUTS.workflow, VALID_INPUTS.envVariables)).toMatchSchema(VALID_INPUTS.schema);
     });
 
-    it('Given invalid inputs the function handles the error gratefully', () => {
+    it('Given invalid inputs the function handles the error gracefully', () => {
         INVALID_INPUTS.forEach((invalidInput) => {
             expect(createTriggerPayload(invalidInput.branch, invalidInput.workflow, invalidInput.envVariables)).toEqual(invalidInput.expectedResult)
         });
     });
-})
+});

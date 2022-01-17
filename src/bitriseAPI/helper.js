@@ -1,5 +1,5 @@
 const got = require('got');
-const {CONSOLE_RED} = require('../models/model');
+const {CONSOLE_RED} = require('../model/model');
 
 const options = {
     headers: {

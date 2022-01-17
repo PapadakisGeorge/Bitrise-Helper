@@ -2,8 +2,8 @@ const readline = require('readline-sync');
 const {
     CONSOLE_BLUE,
     CONSOLE_RED, CONSOLE_GREEN,
-} = require('../models/model');
-const {WORKFLOWS, YES_NO_OPTIONS, YES_OPTIONS, NO_OPTIONS} = require('../models/model');
+} = require('../model/model');
+const {WORKFLOWS, YES_NO_OPTIONS, YES_OPTIONS, NO_OPTIONS} = require('../model/model');
 
 const {triggerBuild} = require("./triggerBuild");
 const {watcherStart} = require("./watcherStart");

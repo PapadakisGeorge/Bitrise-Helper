@@ -1,5 +1,5 @@
 const {POSTRequestWrapper} = require('./helper');
-const {CONSOLE_RED} = require('../models/model');
+const {CONSOLE_RED} = require('../model/model');
 
 /**
  * @param payload The payload of the call.

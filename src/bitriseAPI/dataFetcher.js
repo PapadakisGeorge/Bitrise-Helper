@@ -1,5 +1,5 @@
 const {GETRequestWrapper} = require('./helper');
-const {CONSOLE_RED} = require('../models/model');
+const {CONSOLE_RED} = require('../model/model');
 
 /**
  * @param url The url the call will use.

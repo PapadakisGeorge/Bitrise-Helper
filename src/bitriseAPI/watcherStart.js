@@ -10,7 +10,7 @@ const {
     CONSOLE_YELLOW,
     CONSOLE_RED,
     CONSOLE_GREEN
-} = require('../models/model');
+} = require('../model/model');
 const readline = require('readline-sync');
 
 const {forEach} = require('p-iteration');
