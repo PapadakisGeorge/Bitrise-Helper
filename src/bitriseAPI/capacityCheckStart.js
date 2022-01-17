@@ -58,7 +58,6 @@ const capacityCheckStart = async () => {
             finishTime: approximateEndTime,
         };
     }
-
     const checkIfSkipTestsWasUsed = (build) => {
         if (!Object.keys(build).includes('original_build_params')) {
             return false
@@ -87,16 +86,18 @@ const capacityCheckStart = async () => {
             }
         }
     });
+
     Object.keys(buildsThatAffect).forEach((buildNumber) => {
         const buildName = buildsThatAffect[buildNumber].buildName;
         const reserveTense = buildName.includes('Execute') ? 'reserves' : 'will reserve';
         const finishTimeText = buildsThatAffect[buildNumber].finishTime > 1 ? `in about ${buildsThatAffect[buildNumber].finishTime} minutes.` : 'soon.'
         console.log(CONSOLE_CYAN, `${buildsThatAffect[buildNumber].buildName} with build number ${buildNumber} ${reserveTense} ${buildsThatAffect[buildNumber].sessions} sessions and will end ${finishTimeText}`);
     });
+    console.log(WORKFLOW)
 
-    const sessionsYouWillNeed = WORKFLOW === 'Workflow_Android' ? Number(workflowData['Workflow_Android'].RESERVED_SESSIONS) + Number(workflowData['Workflow_IOS'].RESERVED_SESSIONS) : Number(workflowData[WORKFLOW].RESERVED_SESSIONS);
+    const sessionsYouWillNeed = WORKFLOW === 'Workflow_Android' ? Number(RESERVED_SESSIONS['Workflow_Android']) + Number(RESERVED_SESSIONS['Workflow_IOS']) : Number(workflowData[WORKFLOW].RESERVED_SESSIONS);
     if (occupiedSessions + sessionsYouWillNeed > SESSIONS_LIMIT) {
-        console.log(CONSOLE_RED, `Workflow ${WORKFLOW} will need ${sessionsYouWillNeed}, so it should not be triggered at the moment :( Estimated sessions (with your build) ${occupiedSessions + Number(workflowData[WORKFLOW].RESERVED_SESSIONS)}`);
+        console.log(CONSOLE_RED, `Workflow ${WORKFLOW} will need ${sessionsYouWillNeed}, so it should not be triggered at the moment :( Estimated sessions (with your build) ${occupiedSessions + workflowData[WORKFLOW].RESERVED_SESSIONS}`);
     } else {
         console.log(CONSOLE_GREEN, `${WORKFLOW} will need ${sessionsYouWillNeed}, so it can be triggered!!!`);
         let shouldTriggerBuild;
