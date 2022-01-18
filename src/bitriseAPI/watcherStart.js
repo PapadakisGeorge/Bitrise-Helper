@@ -19,15 +19,41 @@ const cron = require("node-cron");
 const _ = require("lodash");
 const { shellExec } = require("../utils/shellCommand");
 const { approximateFinish } = require("../utils/runTime");
+const { fetchActiveBuilds } = require("./fetchBuilds");
+
+const LIST_OPTION = "Select from a list";
+const MANUAL_INPUT_OPTION = "Enter manually";
 
 const watcherStart = async (initialBranch = "") => {
   let BRANCH = initialBranch;
   while (!BRANCH) {
-    BRANCH = readline.question(
-      `Enter the branch name, or part of it, that you want to watch:\n`
+    let branchNameKnownInput = readline.keyInSelect(
+      [LIST_OPTION, MANUAL_INPUT_OPTION],
+      "Do you want to select a branch from a list or enter the branch name manually?:\n"
     );
-    if (!BRANCH) {
-      console.log(consoleRed, "You need to specify a branch!");
+
+    if (branchNameKnownInput === 0) {
+      console.log(consoleBlue, "Fetching active builds...");
+      const activeBuilds = await fetchActiveBuilds();
+      const activeBranchNamesList = _.uniq(
+        activeBuilds.map((build) => build.branch)
+      );
+      let branchSelection = readline.keyInSelect(
+        activeBranchNamesList,
+        "Select the branch you want to watch"
+      );
+      if (branchSelection === -1) {
+        process.exit(0);
+      } else {
+        BRANCH = activeBranchNamesList[branchSelection];
+      }
+    } else if (branchNameKnownInput === 1) {
+      BRANCH = readline.question(
+        `Enter the branch name, or part of it, that you want to watch:\n`
+      );
+      if (!BRANCH) {
+        console.log(consoleRed, "You need to specify a branch!");
+      }
     }
   }
 
