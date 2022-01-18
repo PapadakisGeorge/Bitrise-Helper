@@ -8,6 +8,7 @@ class ValidationError extends Error {
 const validateInput = (input, desiredType) => {
     let isItValid;
     if (desiredType === 'array') isItValid = Array.isArray(input);
+    else if (desiredType === 'number') isItValid = !isNaN(input)
     else isItValid = typeof input === desiredType
     if (!isItValid) throw new ValidationError(`\nInput: ${input}\nType: not ${desiredType}`);
 };

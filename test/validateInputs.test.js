@@ -1,6 +1,5 @@
 const {validateInput, validateInputs} = require('../src/utils/validateInputs');
 const expect = require('expect');
-const {matchers} = require('jest-json-schema');
 
 const {
     HAPPY_SINGLE_INPUTS,

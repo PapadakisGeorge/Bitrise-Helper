@@ -55,7 +55,8 @@ const UNHAPPY_MULTIPLE_INPUT = {
     inputs: [
         {value: 'value is string', desiredType: 'array'},
         {value: 1, desiredType: 'number'},
-        {value: ['value1', 'value2'], desiredType: 'array'}
+        {value: ['value1', 'value2'], desiredType: 'array'},
+        {value: Number('x'), desiredType: 'number'}
     ],
     expectedResult: new ValidationError(`\nInput: value is string\nType: not array`)
 };
