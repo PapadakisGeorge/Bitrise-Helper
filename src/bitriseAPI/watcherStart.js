@@ -69,11 +69,11 @@ const watcherStart = async (initialBranch = "") => {
   );
 
   if (totalBuilds === 0) {
-    console.log(consoleYellow, `No builds of ${BRANCH} branch detected.`);
+    console.log(CONSOLE_YELLOW, `No builds of ${BRANCH} branch detected.`);
     process.exit(0);
   } else {
-    if (totalBuilds === 1) console.log(consoleGreen, `Build detected!`);
-    else console.log(consoleGreen, `Builds detected!`);
+    if (totalBuilds === 1) console.log(CONSOLE_GREEN, `Build detected!`);
+    else console.log(CONSOLE_GREEN, `Builds detected!`);
 
     const spinners = new Spinners();
     let currentBuilds = {};
@@ -81,9 +81,9 @@ const watcherStart = async (initialBranch = "") => {
     const checkIfNewSpinnerIsNeeded = async (build) => {
       const buildNumber = build.build_number;
       if (!(buildNumber in currentBuilds)) {
-        const finishTime = await approximateFinish(
-          build.triggered_at,
-          build.triggered_workflow
+        const finishTime = approximateFinish(
+            build.triggered_at,
+            build.triggered_workflow
         );
         currentBuilds[buildNumber] = {};
         currentBuilds[buildNumber].url = build.slug;
