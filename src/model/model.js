@@ -21,6 +21,13 @@ const RESERVED_SESSIONS = {
     Execute_IOS_Edge_Suite_2_Tests: 15,
 }
 
+const STATUSES = Object.freeze({
+    'running': 0,
+    'successful': 1,
+    'failed': 2,
+    'aborted with failure': 3,
+    'aborted with success': 4,
+});
 const CONSOLE_RED = '\x1b[31m%s\x1b[0m'
 const CONSOLE_GREEN = '\x1b[32m%s\x1b[0m'
 const CONSOLE_YELLOW = '\x1b[33m%s\x1b[0m'
@@ -38,4 +45,5 @@ module.exports = {
     CONSOLE_YELLOW,
     CONSOLE_BLUE,
     CONSOLE_CYAN,
+    STATUSES
 }

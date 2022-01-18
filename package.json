@@ -7,6 +7,7 @@
     "watch": "node watcher.js",
     "check": "node capacityCheck.js",
     "trigger": "node trigger.js",
+    "abort": "node abort.js",
     "test": "jest"
   },
   "keywords": [],
@@ -23,6 +24,7 @@
   "devDependencies": {
     "jest": "^27.4.7",
     "jest-json-schema": "^6.0.0",
-    "p-iteration": "^1.1.8"
+    "p-iteration": "^1.1.8",
+    "prettier-eslint": "11.0.0"
   }
 }
