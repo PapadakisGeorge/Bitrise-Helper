@@ -1,4 +1,4 @@
-const {getData} = require('../bitriseAPI/dataFetcher');
+const { getData } = require("../bitriseAPI/dataFetcher");
 
 /**
  * @param url The url the call will use.
@@ -7,14 +7,13 @@ const {getData} = require('../bitriseAPI/dataFetcher');
  * @returns {Promise<(*)[]>} The data of the builds and the number of builds.
  */
 const getBranchData = async (url, branch, status) => {
-    const rawData = await getData(url,
-        [
-            ['branch', `${branch}`],
-            ['status', status]
-        ]
-    );
-    return [JSON.parse(rawData.body).data, JSON.parse(rawData.body).paging.total_item_count];
-}
+  const rawData = await getData(url, [["status", status]]);
+  const branchData = JSON.parse(rawData.body).data.filter((build) =>
+    build.branch.includes(branch)
+  );
+
+  return [branchData, JSON.parse(rawData.body).paging.total_item_count];
+};
 
 /**
  * @param url The url the call will use.
@@ -23,16 +22,14 @@ const getBranchData = async (url, branch, status) => {
  * @returns {Promise<(*)[]>} The data of the builds and the number of builds.
  */
 const getWorkflowData = async (url, workflow, status) => {
-    const rawData = await getData(url,
-        [
-            ['workflow', workflow],
-            ['status', status]
-        ]
-    );
-    return JSON.parse(rawData.body).data
-}
+  const rawData = await getData(url, [
+    ["workflow", workflow],
+    ["status", status],
+  ]);
+  return JSON.parse(rawData.body).data;
+};
 
 module.exports = {
-    getBranchData,
-    getWorkflowData
-}
+  getBranchData,
+  getWorkflowData,
+};
