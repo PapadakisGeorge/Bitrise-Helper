@@ -15,15 +15,16 @@ const spinnerText = (build, finishTime) => {
     const buildWorkflowID = build.triggered_workflow;
     const buildPartialURL = build.slug;
     const buildNumber = build.build_number
+    const branchName = build.branch;
 
-    if (Number(finishTime) > 1) {
-        return `${buildWorkflowID} workflow (build number ${buildNumber}) in progress, ETC ${finishTime} minutes. More info: ${BITRISE_APP_URL}${buildPartialURL}`
-    } else if (Number(finishTime) < -10) {
-        return `${buildWorkflowID} workflow (build number ${buildNumber}) in progress, but is taking to long. Check if everything is alright here: ${BITRISE_APP_URL}${buildPartialURL}`
-    } else {
-        return `${buildWorkflowID} workflow (build number ${buildNumber}) in progress, will finish soon. More info: ${BITRISE_APP_URL}${buildPartialURL}`
-    }
-}
+  if (Number(finishTime) > 1) {
+    return `${buildWorkflowID} workflow for ${branchName} (build number ${buildNumber}) in progress, ETC ${finishTime} minutes. More info: ${BITRISE_APP_URL}${buildPartialURL}`;
+  } else if (Number(finishTime) < -10) {
+    return `${buildWorkflowID} workflow for ${branchName} (build number ${buildNumber}) in progress, but is taking to long. Check if everything is alright here: ${BITRISE_APP_URL}${buildPartialURL}`;
+  } else {
+    return `${buildWorkflowID} workflow for ${branchName} (build number ${buildNumber}) in progress, will finish soon. More info: ${BITRISE_APP_URL}${buildPartialURL}`;
+  }
+};
 
 /**
  * @param build An object containing the build data.

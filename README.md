@@ -10,3 +10,5 @@ Current scripts:
   Trigger a build.
 - npm run abort:
   Abort a build.
+- npm run help:
+  List of available commands
