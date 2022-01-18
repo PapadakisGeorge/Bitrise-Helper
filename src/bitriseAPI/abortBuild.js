@@ -2,11 +2,11 @@ const { POSTRequestWrapper } = require("./helper");
 const readline = require("readline-sync");
 const { consoleRed, consoleGreen } = require("../utils/consoleColors");
 const { YES_NO_OPTIONS, YES_OPTIONS, NO_OPTIONS } = require("../model/model");
-const { fetchActiveBuilds } = require("./fetchBuilds");
+const { fetchActiveBranchBuilds } = require("./fetchBuilds");
 
 const findBuildNumber = async () => {
   let buildNumber;
-  const builds = await fetchActiveBuilds();
+  const builds = await fetchActiveBranchBuilds();
   while (!buildNumber) {
     let buildNumberKnownInput = readline.question(
       "Do you know the build number of the build you want to abort? (y/n):\n",
