@@ -5,7 +5,7 @@ const {
   consoleYellow,
   consoleRed,
   consoleGreen,
-} = require("../utils/consoleColors");
+} = require('../model/model');
 const readline = require("readline-sync");
 
 const { STATUSES } = require("../model/model");

@@ -34,7 +34,7 @@ const spinnerText = (build, finishTime) => {
 const startSpinner = (build, finishTime, spinners) => {
     validateInputs([
         {value: build, desiredType: 'object'},
-        {value: finishTime, desiredType: 'number'},
+        {value: Number(finishTime), desiredType: 'number'},
     ]);
     const buildNumber = build.build_number;
     spinners.add(`spinner-${buildNumber}`, {

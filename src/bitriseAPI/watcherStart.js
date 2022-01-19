@@ -81,7 +81,7 @@ const watcherStart = async (initialBranch = "") => {
     const checkIfNewSpinnerIsNeeded = async (build) => {
       const buildNumber = build.build_number;
       if (!(buildNumber in currentBuilds)) {
-        const finishTime = approximateFinish(
+        const finishTime = await approximateFinish(
             build.triggered_at,
             build.triggered_workflow
         );
