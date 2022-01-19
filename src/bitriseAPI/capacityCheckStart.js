@@ -94,11 +94,11 @@ const capacityCheckStart = async () => {
         console.log(consoleCyan, `${buildsThatAffect[buildNumber].buildName} with build number ${buildNumber} ${reserveTense} ${buildsThatAffect[buildNumber].sessions} sessions and will end ${finishTimeText}`);
     });
 
-    const sessionsYouWillNeed = WORKFLOW === 'Workflow_Android' ? Number(workflowData['Workflow_Android'].RESERVED_SESSIONS) + Number(workflowData['Workflow_IOS'].RESERVED_SESSIONS) : Number(workflowData[WORKFLOW].RESERVED_SESSIONS);
+    const sessionsYouWillNeed = WORKFLOW === 'Workflow_Android' ? Number(RESERVED_SESSIONS['Workflow_Android']) + Number(RESERVED_SESSIONS['Workflow_IOS']) : Number(workflowData[WORKFLOW].RESERVED_SESSIONS);
     if (occupiedSessions + sessionsYouWillNeed > SESSIONS_LIMIT) {
-        console.log(consoleRed, `Workflow ${WORKFLOW} will need ${sessionsYouWillNeed}, so it should not be triggered at the moment :( Estimated sessions (with your build) ${occupiedSessions + Number(workflowData[WORKFLOW].RESERVED_SESSIONS)}`);
+        console.log(consoleRed, `Workflow ${WORKFLOW} will need ${sessionsYouWillNeed} sessions, so it should not be triggered at the moment :( Estimated sessions (with your build) ${occupiedSessions + sessionsYouWillNeed}`);
     } else {
-        console.log(consoleGreen, `${WORKFLOW} will need ${sessionsYouWillNeed}, so it can be triggered!!!`);
+        console.log(consoleGreen, `${WORKFLOW} will need ${sessionsYouWillNeed} sessions, so it can be triggered!!!`);
         let shouldTriggerBuild;
         while (!shouldTriggerBuild) {
             shouldTriggerBuild = readline.question(`Would you like to trigger the ${WORKFLOW}? (y/n):\n`, {
