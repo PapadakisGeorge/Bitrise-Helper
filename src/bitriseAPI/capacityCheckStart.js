@@ -29,7 +29,7 @@ const capacityCheckStart = async () => {
     // Start the actual work.
     let workflowData = {}
     
-    const BITRISE_BUILDS_URL = 'https://api.bitrise.io/v0.1/apps/af50b4926a122ad0/builds';
+    const BITRISE_BUILDS_URL = `https://api.bitrise.io/v0.1/apps/${process.env.APP_SLUG}/builds`;
     const SESSIONS_LIMIT = '70';
 
     const getTimeAndReservedSessions = async (workflow) => {

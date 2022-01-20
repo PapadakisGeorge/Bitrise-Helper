@@ -10,7 +10,7 @@ const readline = require("readline-sync");
 const {STATUSES} = require("../model/model");
 
 const BITRISE_BUILDS_URL =
-    "https://api.bitrise.io/v0.1/apps/af50b4926a122ad0/builds";
+    `https://api.bitrise.io/v0.1/apps/${process.env.APP_SLUG}/builds`;
 
 const fetchActiveBuilds = async () => {
     try {

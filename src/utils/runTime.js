@@ -1,7 +1,7 @@
 const {getWorkflowData} = require('../utils/getDataWithOptions');
 const {forEach} = require("p-iteration");
 
-const BITRISE_BUILDS_URL = 'https://api.bitrise.io/v0.1/apps/af50b4926a122ad0/builds';
+const BITRISE_BUILDS_URL = `https://api.bitrise.io/v0.1/apps/${process.env.APP_SLUG}/builds`;
 
 /**
  *

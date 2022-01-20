@@ -61,7 +61,7 @@ const watcherStart = async (initialBranch = "") => {
 
   //Get data for running builds when the script is initiated
   const BITRISE_BUILDS_URL =
-    "https://api.bitrise.io/v0.1/apps/af50b4926a122ad0/builds";
+    `https://api.bitrise.io/v0.1/apps/${process.env.APP_SLUG}/builds`;
   let [buildData, totalBuilds] = await getBranchData(
     BITRISE_BUILDS_URL,
     BRANCH,
