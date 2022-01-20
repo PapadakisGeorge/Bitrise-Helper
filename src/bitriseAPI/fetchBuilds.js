@@ -1,6 +1,6 @@
 const { getData } = require("./dataFetcher");
 const { getBranchData } = require("../utils/getDataWithOptions");
-const { CONSOLE_BLUE, CONSOLE_YELLOW, CONSOLE_RED } = require("../model/model");
+const chalk = require("chalk");
 const readline = require("readline-sync");
 
 const { STATUSES } = require("../model/model");
@@ -12,12 +12,12 @@ const fetchActiveBuilds = async () => {
     const rawBuildsData = await getData(BITRISE_BUILDS_URL, [["status", 0]]);
     const buildsData = JSON.parse(rawBuildsData.body).data;
     if (buildsData.length === 0) {
-      console.log(CONSOLE_YELLOW, "No branches are running at Bitrise!");
+      console.log(chalk.yellow("No branches are running at Bitrise!"));
       process.exit(0);
     }
     return buildsData;
   } catch (error) {
-    console.log(CONSOLE_RED, "Error while fetching the active builds");
+    console.log(chalk.yellow("Error while fetching the active builds"));
   }
 };
 
@@ -29,7 +29,7 @@ const fetchBranchBuilds = async ({ initialBranch, initialStatus = "" }) => {
   while (!branch) {
     branch = readline.question(`Enter the branch name you want build for:\n`);
     if (!branch) {
-      console.log(CONSOLE_RED, "You need to specify a branch!");
+      console.log(chalk.red("You need to specify a branch!"));
     }
   }
 
@@ -39,7 +39,7 @@ const fetchBranchBuilds = async ({ initialBranch, initialStatus = "" }) => {
       `Which build status do you want to fetch?`
     );
     if (statusInput === -1) {
-      console.log(CONSOLE_BLUE, "Aborting fetch...");
+      console.log(chalk.blue("Aborting fetch..."));
       process.exit(0);
     }
 
@@ -54,7 +54,7 @@ const fetchBranchBuilds = async ({ initialBranch, initialStatus = "" }) => {
   );
 
   if (totalBuilds === 0) {
-    console.log(CONSOLE_YELLOW, `No builds of ${branch} branch detected.`);
+    console.log(chalk.yellow(`No builds of ${branch} branch detected.`));
   } else {
     return buildData.map((build) => ({
       buildNumber: build.build_number,

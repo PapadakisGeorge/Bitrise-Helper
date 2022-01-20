@@ -1,5 +1,5 @@
 const readline = require("readline-sync");
-const { CONSOLE_BLUE, CONSOLE_RED, CONSOLE_GREEN } = require("../model/model");
+const chalk = require("chalk");
 const {
   WORKFLOWS,
   YES_NO_OPTIONS,
@@ -19,7 +19,7 @@ const triggerStart = async (initialWorkflow = "") => {
   while (!BRANCH) {
     BRANCH = readline.question(`Enter the branch name you want to trigger:\n`);
     if (!BRANCH) {
-      console.log(CONSOLE_RED, "You need to specify a branch!");
+      console.log(chalk.red("You need to specify a branch!"));
     }
     if (!initialWorkflow) {
       while (!WORKFLOW) {
@@ -28,7 +28,7 @@ const triggerStart = async (initialWorkflow = "") => {
           `Which workflow do you want to trigger?`
         );
         if (WORKFLOW_INPUT === -1) {
-          console.log(CONSOLE_BLUE, "Aborting trigger...");
+          console.log(chalk.blue("Aborting trigger..."));
           process.exit(0);
         }
         WORKFLOW = availableWorkflowsMatrix[WORKFLOW_INPUT];
@@ -45,8 +45,9 @@ const triggerStart = async (initialWorkflow = "") => {
       ? "Tests will be skipped"
       : "Tests will run";
     console.log(
-      CONSOLE_BLUE,
-      `Triggering ${WORKFLOW} for branch ${BRANCH}. ${skippingTestsText}`
+      chalk.blue(
+        `Triggering ${WORKFLOW} for branch ${BRANCH}. ${skippingTestsText}`
+      )
     );
   }
 
@@ -61,13 +62,14 @@ const triggerStart = async (initialWorkflow = "") => {
 
   let response = await triggerBuild(payload);
   if (response.statusCode > 201) {
-    console.log(CONSOLE_RED, "Something went wrong, try again :(");
+    console.log(chalk.red("Something went wrong, try again :("));
   } else {
     console.log(
-      CONSOLE_GREEN,
-      `Build triggered successfully, more info: ${
-        JSON.parse(response.body).build_url
-      }`
+      chalk.green(
+        `Build triggered successfully, more info: ${
+          JSON.parse(response.body).build_url
+        }`
+      )
     );
     let shouldWatchBuilds;
     while (!shouldWatchBuilds) {

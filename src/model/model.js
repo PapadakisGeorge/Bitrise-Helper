@@ -9,7 +9,7 @@ const YES_OPTIONS = ["yes", "Yes", "YES", "Y", "y"];
 const NO_OPTIONS = ["no", "No", "NO", "N", "n"];
 const YES_NO_OPTIONS = [...YES_OPTIONS, ...NO_OPTIONS];
 
-const RESERVED_SESSIONS = {
+const RESERVED_SESSIONS = Object.freeze({
   Workflow_Android: 15,
   Workflow_IOS: 20,
   Workflow_Android_Edge: 10,
@@ -19,7 +19,7 @@ const RESERVED_SESSIONS = {
   Execute_IOS_Tests: 20,
   Execute_IOS_Edge_Suite_1_Tests: 15,
   Execute_IOS_Edge_Suite_2_Tests: 15,
-};
+});
 
 const STATUSES = Object.freeze({
   running: 0,
@@ -29,22 +29,11 @@ const STATUSES = Object.freeze({
   "aborted with success": 4,
 });
 
-const CONSOLE_RED = "\x1b[31m%s\x1b[0m";
-const CONSOLE_GREEN = "\x1b[32m%s\x1b[0m";
-const CONSOLE_YELLOW = "\x1b[33m%s\x1b[0m";
-const CONSOLE_BLUE = "\x1b[34m%s\x1b[0m";
-const CONSOLE_CYAN = "\x1b[36m%s\x1b[0m";
-
 module.exports = {
   WORKFLOWS,
   YES_OPTIONS,
   NO_OPTIONS,
   YES_NO_OPTIONS,
   RESERVED_SESSIONS,
-  CONSOLE_RED,
-  CONSOLE_GREEN,
-  CONSOLE_YELLOW,
-  CONSOLE_BLUE,
-  CONSOLE_CYAN,
   STATUSES,
 };

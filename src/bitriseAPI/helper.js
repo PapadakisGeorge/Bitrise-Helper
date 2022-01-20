@@ -1,5 +1,5 @@
 const got = require("got");
-const { CONSOLE_RED } = require("../model/model");
+const chalk = require("chalk");
 
 const options = {
   headers: {
@@ -13,8 +13,7 @@ const GETRequestWrapper = async (url, searchOptions) => {
     return got(url, options, { searchParams });
   } catch (error) {
     console.log(
-      CONSOLE_RED,
-      `Get request encountered the following error: ${error.message}`
+      chalk.red(`Get request encountered the following error: ${error.message}`)
     );
     return error;
   }
@@ -25,8 +24,9 @@ const POSTRequestWrapper = async (url, payload) => {
     return got.post(url, { ...options, json: payload });
   } catch (error) {
     console.log(
-      CONSOLE_RED,
-      `POST request encountered the following error: ${error.message}`
+      chalk.red(
+        `POST request encountered the following error: ${error.message}`
+      )
     );
     return error;
   }

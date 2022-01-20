@@ -1,4 +1,4 @@
-const { CONSOLE_RED, CONSOLE_GREEN } = require("../model/model");
+const chalk = require("chalk");
 const { createTriggerPayload } = require("../utils/createTriggerPayload");
 const { triggerBuild } = require("./triggerBuild");
 const { forEach } = require("p-iteration");
@@ -13,13 +13,14 @@ const triggerMultipleBuilds = async (builds) => {
     let response = await triggerBuild(payload);
 
     if (response.statusCode > 299)
-      console.log(CONSOLE_RED, "Something went wrong, try again :(");
+      console.log(chalk.red("Something went wrong, try again :("));
     else
       console.log(
-        CONSOLE_GREEN,
-        `Build triggered successfully, more info: ${
-          JSON.parse(response.body).build_url
-        }`
+        chalk.green(
+          `Build triggered successfully, more info: ${
+            JSON.parse(response.body).build_url
+          }`
+        )
       );
   });
 };

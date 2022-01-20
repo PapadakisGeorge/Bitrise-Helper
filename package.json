@@ -8,12 +8,13 @@
     "check": "node capacityCheck.js",
     "trigger": "node trigger.js",
     "abort": "node abort.js",
-    "help" : "node help.js"
+    "help": "node help.js"
   },
   "keywords": [],
   "author": "",
   "license": "ISC",
   "dependencies": {
+    "chalk": "4.0.0",
     "cron": "^1.8.2",
     "got": "^11.8.2",
     "lodash": "^4.17.21",

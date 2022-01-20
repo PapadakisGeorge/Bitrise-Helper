@@ -1,5 +1,5 @@
 const { POSTRequestWrapper } = require("./helper");
-const { CONSOLE_RED } = require("../model/model");
+const chalk = require("chalk");
 
 /**
  * @param payload The payload of the call.
@@ -12,8 +12,9 @@ const triggerBuild = async (payload) => {
     );
   } catch (error) {
     console.log(
-      CONSOLE_RED,
-      `Request encountered the following error while posting data with error: ${error.message}`
+      chalk.red(
+        `Request encountered the following error while posting data with error: ${error.message}`
+      )
     );
     return error;
   }

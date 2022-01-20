@@ -1,5 +1,5 @@
 const { GETRequestWrapper } = require("./helper");
-const { CONSOLE_RED } = require("../model/model");
+const chalk = require("chalk");
 
 /**
  * @param url The url the call will use.
@@ -11,8 +11,9 @@ const getData = async (url, searchOptions) => {
     return await GETRequestWrapper(url, searchOptions);
   } catch (error) {
     console.log(
-      CONSOLE_RED,
-      `Request encountered the following error while fetching data with error: ${error.message}`
+      chalk.red(
+        `Request encountered the following error while fetching data with error: ${error.message}`
+      )
     );
     return error;
   }

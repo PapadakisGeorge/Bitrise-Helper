@@ -1,9 +1,4 @@
-const {
-  CONSOLE_GREEN,
-  CONSOLE_RED,
-  CONSOLE_CYAN,
-  CONSOLE_BLUE,
-} = require("../model/model");
+const chalk = require("chalk");
 const readline = require("readline-sync");
 
 const { forEach } = require("p-iteration");
@@ -32,7 +27,7 @@ const capacityCheckStart = async () => {
       `Which workflow do you want to trigger?`
     );
     if (WORKFLOW_INPUT === -1) {
-      console.log(CONSOLE_BLUE, "Aborting trigger...");
+      console.log(chalk.blue("Aborting trigger..."));
       process.exit(0);
     }
     WORKFLOW = availableWorkflowsMatrix[WORKFLOW_INPUT];
@@ -122,8 +117,9 @@ const capacityCheckStart = async () => {
         ? `in about ${buildsThatAffect[buildNumber].finishTime} minutes.`
         : "soon.";
     console.log(
-      CONSOLE_CYAN,
-      `${buildsThatAffect[buildNumber].buildName} with build number ${buildNumber} ${reserveTense} ${buildsThatAffect[buildNumber].sessions} sessions and will end ${finishTimeText}`
+      chalk.cyan(
+        `${buildsThatAffect[buildNumber].buildName} with build number ${buildNumber} ${reserveTense} ${buildsThatAffect[buildNumber].sessions} sessions and will end ${finishTimeText}`
+      )
     );
   });
 
@@ -135,15 +131,17 @@ const capacityCheckStart = async () => {
 
   if (occupiedSessions + sessionsYouWillNeed > SESSIONS_LIMIT) {
     console.log(
-      CONSOLE_RED,
-      `Workflow ${WORKFLOW} will need ${sessionsYouWillNeed} sessions, so it should not be triggered at the moment :( Estimated sessions (with your build) ${
-        occupiedSessions + sessionsYouWillNeed
-      }`
+      chalk.red(
+        `Workflow ${WORKFLOW} will need ${sessionsYouWillNeed} sessions, so it should not be triggered at the moment :( Estimated sessions (with your build) ${
+          occupiedSessions + sessionsYouWillNeed
+        }`
+      )
     );
   } else {
     console.log(
-      CONSOLE_GREEN,
-      `${WORKFLOW} will need ${sessionsYouWillNeed} sessions, so it can be triggered!!!`
+      chalk.green(
+        `${WORKFLOW} will need ${sessionsYouWillNeed} sessions, so it can be triggered!!!`
+      )
     );
     let shouldTriggerBuild;
     while (!shouldTriggerBuild) {

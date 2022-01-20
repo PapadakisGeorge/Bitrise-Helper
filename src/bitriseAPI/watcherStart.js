@@ -5,12 +5,7 @@ const {
   updateSpinnerText,
   startSpinner,
 } = require("../utils/spinners");
-const {
-  CONSOLE_BLUE,
-  CONSOLE_YELLOW,
-  CONSOLE_RED,
-  CONSOLE_GREEN,
-} = require("../model/model");
+const chalk = require("chalk");
 const readline = require("readline-sync");
 
 const { forEach } = require("p-iteration");
@@ -33,7 +28,7 @@ const watcherStart = async (initialBranch = "") => {
     );
 
     if (branchNameKnownInput === 0) {
-      console.log(CONSOLE_BLUE, "Fetching active builds...");
+      console.log(chalk.blue("Fetching active builds..."));
       const activeBuilds = await fetchActiveBuilds();
       const activeBranchNamesList = _.uniq(
         activeBuilds.map((build) => build.branch)
@@ -52,14 +47,13 @@ const watcherStart = async (initialBranch = "") => {
         `Enter the branch name, or part of it, that you want to watch:\n`
       );
       if (!BRANCH) {
-        console.log(CONSOLE_RED, "You need to specify a branch!");
+        console.log(chalk.red("You need to specify a branch!"));
       }
     }
   }
 
   console.log(
-    CONSOLE_BLUE,
-    `Getting builds on Bitrise of ${BRANCH} currently running...`
+    chalk.blue(`Getting builds on Bitrise of ${BRANCH} currently running...`)
   );
 
   //Get data for running builds when the script is initiated
@@ -71,11 +65,11 @@ const watcherStart = async (initialBranch = "") => {
   );
 
   if (totalBuilds === 0) {
-    console.log(CONSOLE_YELLOW, `No builds of ${BRANCH} branch detected.`);
+    console.log(chalk.yellow(`No builds of ${BRANCH} branch detected.`));
     process.exit(0);
   } else {
-    if (totalBuilds === 1) console.log(CONSOLE_GREEN, `Build detected!`);
-    else console.log(CONSOLE_GREEN, `Builds detected!`);
+    if (totalBuilds === 1) console.log(chalk.green(`Build detected!`));
+    else console.log(chalk.green(`Builds detected!`));
 
     const spinners = new Spinners();
     let currentBuilds = {};
