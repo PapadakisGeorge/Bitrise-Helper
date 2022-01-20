@@ -1,5 +1,5 @@
-const { watcherStart } = require('./src/bitriseAPI/watcherStart');
+const { watcherStart } = require("./src/bitriseAPI/watcherStart");
 
 (async () => {
-    await watcherStart();
+  await watcherStart();
 })();

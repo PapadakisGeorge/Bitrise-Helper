@@ -6,12 +6,12 @@ const {
   startSpinner,
 } = require("../utils/spinners");
 const {
-    CONSOLE_BLUE,
-    CONSOLE_YELLOW,
-    CONSOLE_RED,
-    CONSOLE_GREEN
-} = require('../model/model');
-const readline = require('readline-sync');
+  CONSOLE_BLUE,
+  CONSOLE_YELLOW,
+  CONSOLE_RED,
+  CONSOLE_GREEN,
+} = require("../model/model");
+const readline = require("readline-sync");
 
 const { forEach } = require("p-iteration");
 const Spinners = require("spinnies");
@@ -57,11 +57,13 @@ const watcherStart = async (initialBranch = "") => {
     }
   }
 
-    console.log(CONSOLE_BLUE, `Getting builds on Bitrise of ${BRANCH} currently running...`);
+  console.log(
+    CONSOLE_BLUE,
+    `Getting builds on Bitrise of ${BRANCH} currently running...`
+  );
 
   //Get data for running builds when the script is initiated
-  const BITRISE_BUILDS_URL =
-    `https://api.bitrise.io/v0.1/apps/${process.env.APP_SLUG}/builds`;
+  const BITRISE_BUILDS_URL = `https://api.bitrise.io/v0.1/apps/${process.env.APP_SLUG}/builds`;
   let [buildData, totalBuilds] = await getBranchData(
     BITRISE_BUILDS_URL,
     BRANCH,
@@ -82,8 +84,8 @@ const watcherStart = async (initialBranch = "") => {
       const buildNumber = build.build_number;
       if (!(buildNumber in currentBuilds)) {
         const finishTime = await approximateFinish(
-            build.triggered_at,
-            build.triggered_workflow
+          build.triggered_at,
+          build.triggered_workflow
         );
         currentBuilds[buildNumber] = {};
         currentBuilds[buildNumber].url = build.slug;

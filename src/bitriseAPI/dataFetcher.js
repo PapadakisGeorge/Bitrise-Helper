@@ -1,5 +1,5 @@
-const {GETRequestWrapper} = require('./helper');
-const {CONSOLE_RED} = require('../model/model');
+const { GETRequestWrapper } = require("./helper");
+const { CONSOLE_RED } = require("../model/model");
 
 /**
  * @param url The url the call will use.
@@ -7,16 +7,17 @@ const {CONSOLE_RED} = require('../model/model');
  * @returns {Promise<Response<string>|*|undefined>} The data the call will fetch.
  */
 const getData = async (url, searchOptions) => {
-    try {
-        return await GETRequestWrapper(
-            url,
-            searchOptions);
-    } catch (error) {
-        console.log(CONSOLE_RED, `Request encountered the following error while fetching data with error: ${error.message}`);
-        return error;
-    }
-}
+  try {
+    return await GETRequestWrapper(url, searchOptions);
+  } catch (error) {
+    console.log(
+      CONSOLE_RED,
+      `Request encountered the following error while fetching data with error: ${error.message}`
+    );
+    return error;
+  }
+};
 
 module.exports = {
-    getData
-}
+  getData,
+};

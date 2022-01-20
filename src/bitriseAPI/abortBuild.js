@@ -1,6 +1,6 @@
 const { POSTRequestWrapper } = require("./helper");
 const readline = require("readline-sync");
-const { consoleRed, consoleGreen } = require("../utils/consoleColors");
+const { CONSOLE_RED, CONSOLE_GREEN } = require("../model/model");
 const { YES_NO_OPTIONS, YES_OPTIONS, NO_OPTIONS } = require("../model/model");
 const { fetchActiveBranchBuilds } = require("./fetchBuilds");
 
@@ -52,7 +52,7 @@ const abortBuild = async () => {
   if (response.statusCode > 201) {
     console.error("Something went wrong");
   } else {
-    console.log(consoleGreen, "The build was aborted successfully");
+    console.log(CONSOLE_GREEN, "The build was aborted successfully");
   }
   process.exit(0);
 };
@@ -65,7 +65,7 @@ const abort = async (payload) => {
     );
   } catch (error) {
     console.log(
-      consoleRed,
+      CONSOLE_RED,
       `Request encountered the following error while posting data with error: ${error.message}`
     );
     return error;

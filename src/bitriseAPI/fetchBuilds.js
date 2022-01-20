@@ -1,78 +1,69 @@
-const {getData} = require("./dataFetcher");
-const {getBranchData} = require("../utils/getDataWithOptions");
-const {
-    CONSOLE_BLUE,
-    CONSOLE_YELLOW,
-    CONSOLE_RED,
-} = require('../model/model');
+const { getData } = require("./dataFetcher");
+const { getBranchData } = require("../utils/getDataWithOptions");
+const { CONSOLE_BLUE, CONSOLE_YELLOW, CONSOLE_RED } = require("../model/model");
 const readline = require("readline-sync");
 
-const {STATUSES} = require("../model/model");
+const { STATUSES } = require("../model/model");
 
-const BITRISE_BUILDS_URL =
-    `https://api.bitrise.io/v0.1/apps/${process.env.APP_SLUG}/builds`;
+const BITRISE_BUILDS_URL = `https://api.bitrise.io/v0.1/apps/${process.env.APP_SLUG}/builds`;
 
 const fetchActiveBuilds = async () => {
-    try {
-        const rawBuildsData = await getData(BITRISE_BUILDS_URL, [["status", 0]]);
-        const buildsData = JSON.parse(rawBuildsData.body).data
-        if (buildsData.length === 0) {
-            console.log(CONSOLE_YELLOW, 'No branches are running at Bitrise!');
-            process.exit(0)
-        }
-        return buildsData;
-    } catch (error) {
-        console.log(CONSOLE_RED, 'Error while fetching the active builds');
+  try {
+    const rawBuildsData = await getData(BITRISE_BUILDS_URL, [["status", 0]]);
+    const buildsData = JSON.parse(rawBuildsData.body).data;
+    if (buildsData.length === 0) {
+      console.log(CONSOLE_YELLOW, "No branches are running at Bitrise!");
+      process.exit(0);
     }
+    return buildsData;
+  } catch (error) {
+    console.log(CONSOLE_RED, "Error while fetching the active builds");
+  }
 };
 
-const fetchActiveBranchBuilds = () => fetchBranchBuilds({initialStatus: 0});
+const fetchActiveBranchBuilds = () => fetchBranchBuilds({ initialStatus: 0 });
 
-const fetchBranchBuilds = async ({initialBranch, initialStatus = ""}) => {
-
-    let status = initialStatus;
-    let branch = initialBranch;
-    while (!branch) {
-        branch = readline.question(`Enter the branch name you want build for:\n`);
-        if (!branch) {
-            console.log(CONSOLE_RED, "You need to specify a branch!");
-        }
+const fetchBranchBuilds = async ({ initialBranch, initialStatus = "" }) => {
+  let status = initialStatus;
+  let branch = initialBranch;
+  while (!branch) {
+    branch = readline.question(`Enter the branch name you want build for:\n`);
+    if (!branch) {
+      console.log(CONSOLE_RED, "You need to specify a branch!");
     }
+  }
 
-    while (typeof status !== "number") {
-        let statusInput = readline.keyInSelect(
-            Object.keys(STATUSES),
-            `Which build status do you want to fetch?`
-        );
-        if (statusInput === -1) {
-            console.log(CONSOLE_BLUE, "Aborting fetch...");
-            process.exit(0);
-        }
-
-        status = STATUSES[Object.keys(STATUSES)[statusInput]];
-    }
-
-    console.log(CONSOLE_BLUE, `Getting builds on Bitrise of ${branch}...`);
-    let [buildData, totalBuilds] = await getBranchData(
-        BITRISE_BUILDS_URL,
-        branch,
-        status
+  while (typeof status !== "number") {
+    let statusInput = readline.keyInSelect(
+      Object.keys(STATUSES),
+      `Which build status do you want to fetch?`
     );
-
-    if (totalBuilds === 0) {
-        console.log(CONSOLE_YELLOW, `No builds of ${branch} branch detected.`);
-    } else {
-        return buildData.map((build) => ({
-            buildNumber: build.build_number,
-            buildSlug: build.slug,
-        }));
+    if (statusInput === -1) {
+      console.log(CONSOLE_BLUE, "Aborting fetch...");
+      process.exit(0);
     }
 
+    status = STATUSES[Object.keys(STATUSES)[statusInput]];
+  }
 
-}
+  console.log(CONSOLE_BLUE, `Getting builds on Bitrise of ${branch}...`);
+  let [buildData, totalBuilds] = await getBranchData(
+    BITRISE_BUILDS_URL,
+    branch,
+    status
+  );
 
+  if (totalBuilds === 0) {
+    console.log(CONSOLE_YELLOW, `No builds of ${branch} branch detected.`);
+  } else {
+    return buildData.map((build) => ({
+      buildNumber: build.build_number,
+      buildSlug: build.slug,
+    }));
+  }
+};
 
 module.exports = {
-    fetchActiveBranchBuilds,
-    fetchActiveBuilds,
+  fetchActiveBranchBuilds,
+  fetchActiveBuilds,
 };
