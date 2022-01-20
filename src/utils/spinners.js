@@ -18,11 +18,11 @@ const spinnerText = (build, finishTime) => {
     const branchName = build.branch;
 
   if (Number(finishTime) > 1) {
-    return `${buildWorkflowID} workflow for ${branchName} (build number ${buildNumber}) in progress, ETC ${finishTime} minutes. More info: ${BITRISE_APP_URL}${buildPartialURL}`;
+    return `${buildWorkflowID} workflow for ${branchName} (build number ${buildNumber}) in progress, ETC ${finishTime} minutes.\nMore info: ${BITRISE_APP_URL}${buildPartialURL}`;
   } else if (Number(finishTime) < -10) {
-    return `${buildWorkflowID} workflow for ${branchName} (build number ${buildNumber}) in progress, but is taking to long. Check if everything is alright here: ${BITRISE_APP_URL}${buildPartialURL}`;
+    return `${buildWorkflowID} workflow for ${branchName} (build number ${buildNumber}) in progress, but is taking to long.\nCheck if everything is alright here: ${BITRISE_APP_URL}${buildPartialURL}`;
   } else {
-    return `${buildWorkflowID} workflow for ${branchName} (build number ${buildNumber}) in progress, will finish soon. More info: ${BITRISE_APP_URL}${buildPartialURL}`;
+    return `${buildWorkflowID} workflow for ${branchName} (build number ${buildNumber}) in progress, will finish soon.\nMore info: ${BITRISE_APP_URL}${buildPartialURL}`;
   }
 };
 
@@ -82,8 +82,7 @@ const stopSpinner = (buildNumber, buildType, buildStatus, buildURL, spinners) =>
         '4': 'was aborted with success'
     };
     const spinnerStopText = `${buildType} ${buildNumber} ${spinnerOptions[buildStatus]}! More info: ${BITRISE_APP_URL}${buildURL}`
-
-    if (buildStatus === '2') {
+    if (buildStatus === 2) {
         spinners.fail(`spinner-${buildNumber}`, {
             text: spinnerStopText
         });
