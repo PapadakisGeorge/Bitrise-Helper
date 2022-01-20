@@ -6,12 +6,12 @@ const {
   startSpinner,
 } = require("../utils/spinners");
 const {
-  consoleBlue,
-  consoleYellow,
-  consoleRed,
-  consoleGreen,
-} = require("../utils/consoleColors");
-const readline = require("readline-sync");
+    CONSOLE_BLUE,
+    CONSOLE_YELLOW,
+    CONSOLE_RED,
+    CONSOLE_GREEN
+} = require('../model/model');
+const readline = require('readline-sync');
 
 const { forEach } = require("p-iteration");
 const Spinners = require("spinnies");
@@ -33,7 +33,7 @@ const watcherStart = async (initialBranch = "") => {
     );
 
     if (branchNameKnownInput === 0) {
-      console.log(consoleBlue, "Fetching active builds...");
+      console.log(CONSOLE_BLUE, "Fetching active builds...");
       const activeBuilds = await fetchActiveBuilds();
       const activeBranchNamesList = _.uniq(
         activeBuilds.map((build) => build.branch)
@@ -52,15 +52,12 @@ const watcherStart = async (initialBranch = "") => {
         `Enter the branch name, or part of it, that you want to watch:\n`
       );
       if (!BRANCH) {
-        console.log(consoleRed, "You need to specify a branch!");
+        console.log(CONSOLE_RED, "You need to specify a branch!");
       }
     }
   }
 
-  console.log(
-    consoleBlue,
-    `Getting builds on Bitrise of ${BRANCH} currently running...`
-  );
+    console.log(CONSOLE_BLUE, `Getting builds on Bitrise of ${BRANCH} currently running...`);
 
   //Get data for running builds when the script is initiated
   const BITRISE_BUILDS_URL =
@@ -72,11 +69,11 @@ const watcherStart = async (initialBranch = "") => {
   );
 
   if (totalBuilds === 0) {
-    console.log(consoleYellow, `No builds of ${BRANCH} branch detected.`);
+    console.log(CONSOLE_YELLOW, `No builds of ${BRANCH} branch detected.`);
     process.exit(0);
   } else {
-    if (totalBuilds === 1) console.log(consoleGreen, `Build detected!`);
-    else console.log(consoleGreen, `Builds detected!`);
+    if (totalBuilds === 1) console.log(CONSOLE_GREEN, `Build detected!`);
+    else console.log(CONSOLE_GREEN, `Builds detected!`);
 
     const spinners = new Spinners();
     let currentBuilds = {};
@@ -85,8 +82,8 @@ const watcherStart = async (initialBranch = "") => {
       const buildNumber = build.build_number;
       if (!(buildNumber in currentBuilds)) {
         const finishTime = await approximateFinish(
-          build.triggered_at,
-          build.triggered_workflow
+            build.triggered_at,
+            build.triggered_workflow
         );
         currentBuilds[buildNumber] = {};
         currentBuilds[buildNumber].url = build.slug;

@@ -1,9 +1,9 @@
 const {
-    consoleGreen,
-    consoleRed,
-    consoleCyan,
-    consoleBlue
-} = require('../utils/consoleColors');
+    CONSOLE_GREEN,
+    CONSOLE_RED,
+    CONSOLE_CYAN,
+    CONSOLE_BLUE
+} = require('../model/model');
 const readline = require('readline-sync');
 const _ = require('lodash');
 
@@ -21,7 +21,7 @@ const capacityCheckStart = async () => {
     while (!WORKFLOW) {
         let WORKFLOW_INPUT = readline.keyInSelect(availableWorkflowsMatrix, `Which workflow do you want to trigger?`);
         if (WORKFLOW_INPUT === -1) {
-            console.log(consoleBlue, 'Aborting trigger...');
+            console.log(CONSOLE_BLUE, 'Aborting trigger...');
             process.exit(0)
         }
         WORKFLOW = availableWorkflowsMatrix[WORKFLOW_INPUT];
@@ -58,7 +58,6 @@ const capacityCheckStart = async () => {
             finishTime: approximateEndTime,
         };
     }
-
     const checkIfSkipTestsWasUsed = (build) => {
         if (!Object.keys(build).includes('original_build_params')) {
             return false
@@ -87,18 +86,20 @@ const capacityCheckStart = async () => {
             }
         }
     });
+
     Object.keys(buildsThatAffect).forEach((buildNumber) => {
         const buildName = buildsThatAffect[buildNumber].buildName;
         const reserveTense = buildName.includes('Execute') ? 'reserves' : 'will reserve';
         const finishTimeText = buildsThatAffect[buildNumber].finishTime > 1 ? `in about ${buildsThatAffect[buildNumber].finishTime} minutes.` : 'soon.'
-        console.log(consoleCyan, `${buildsThatAffect[buildNumber].buildName} with build number ${buildNumber} ${reserveTense} ${buildsThatAffect[buildNumber].sessions} sessions and will end ${finishTimeText}`);
+        console.log(CONSOLE_CYAN, `${buildsThatAffect[buildNumber].buildName} with build number ${buildNumber} ${reserveTense} ${buildsThatAffect[buildNumber].sessions} sessions and will end ${finishTimeText}`);
     });
 
     const sessionsYouWillNeed = WORKFLOW === 'Workflow_Android' ? Number(RESERVED_SESSIONS['Workflow_Android']) + Number(RESERVED_SESSIONS['Workflow_IOS']) : Number(workflowData[WORKFLOW].RESERVED_SESSIONS);
+
     if (occupiedSessions + sessionsYouWillNeed > SESSIONS_LIMIT) {
-        console.log(consoleRed, `Workflow ${WORKFLOW} will need ${sessionsYouWillNeed} sessions, so it should not be triggered at the moment :( Estimated sessions (with your build) ${occupiedSessions + sessionsYouWillNeed}`);
+        console.log(CONSOLE_RED, `Workflow ${WORKFLOW} will need ${sessionsYouWillNeed} sessions, so it should not be triggered at the moment :( Estimated sessions (with your build) ${occupiedSessions + sessionsYouWillNeed}`);
     } else {
-        console.log(consoleGreen, `${WORKFLOW} will need ${sessionsYouWillNeed} sessions, so it can be triggered!!!`);
+        console.log(CONSOLE_GREEN, `${WORKFLOW} will need ${sessionsYouWillNeed} sessions, so it can be triggered!!!`);
         let shouldTriggerBuild;
         while (!shouldTriggerBuild) {
             shouldTriggerBuild = readline.question(`Would you like to trigger the ${WORKFLOW}? (y/n):\n`, {

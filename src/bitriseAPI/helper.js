@@ -1,5 +1,5 @@
 const got = require('got');
-const {consoleRed} = require('../utils/consoleColors');
+const {CONSOLE_RED} = require('../model/model');
 
 const options = {
     headers: {
@@ -19,7 +19,7 @@ const GETRequestWrapper = async (
             {searchParams}
         );
     } catch (error) {
-        console.log(consoleRed, `Get request encountered the following error: ${error.message}`);
+        console.log(CONSOLE_RED, `Get request encountered the following error: ${error.message}`);
         return error;
     }
 };
@@ -34,7 +34,7 @@ const POSTRequestWrapper = async (
                 {...options, json: payload}
             );
         } catch (error) {
-            console.log(consoleRed, `POST request encountered the following error: ${error.message}`);
+            console.log(CONSOLE_RED, `POST request encountered the following error: ${error.message}`);
             return error;
         }
     }
