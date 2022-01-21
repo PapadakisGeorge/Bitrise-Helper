@@ -78,12 +78,14 @@ const stopSpinner = (
     { value: Number(buildStatus), desiredType: "number" },
     { value: buildURL, desiredType: "string" },
   ]);
+
   const spinnerOptions = {
     1: "succeeded",
     2: "failed",
     3: "was aborted",
     4: "was aborted with success",
   };
+
   const spinnerStopText = `${buildType} ${buildNumber} ${spinnerOptions[buildStatus]}! More info: ${BITRISE_APP_URL}${buildURL}`;
   if (buildStatus === 2) {
     spinners.fail(`spinner-${buildNumber}`, {

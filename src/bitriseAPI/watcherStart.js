@@ -101,21 +101,28 @@ const watcherStart = async (initialBranch = "") => {
           ["build_number", buildNumber],
         ]);
         const buildData = JSON.parse(rawData.body).data[0];
-
-        if (buildData.status !== 0) {
+        const buildStatus = buildData.status;
+        if (buildStatus !== 0) {
           const buildURL = currentBuilds[buildNumber].url;
           stopSpinner(
             buildNumber,
             buildData.triggered_workflow,
-            buildData.status,
+            buildStatus,
             buildURL,
             spinners
           );
           delete currentBuilds[buildNumber];
-          shellExec(
-            'osascript -e "display notification \\"Build finished!\\" with title \\"BITRISE BUILD\\""'
-          );
-          shellExec("say Builds finished!");
+          if (buildStatus === 2) {
+            shellExec(
+              'osascript -e "display notification \\"Build failed!\\" with title \\"BITRISE BUILD\\""'
+            );
+            shellExec("say Builds failed!");
+          } else {
+            shellExec(
+              'osascript -e "display notification \\"Build finished!\\" with title \\"BITRISE BUILD\\""'
+            );
+            shellExec("say Builds finished!");
+          }
         } else {
           const finishTime = currentBuilds[buildNumber].finishTime - 1;
           currentBuilds[buildNumber].finishTime = finishTime;
