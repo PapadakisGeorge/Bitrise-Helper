@@ -49,7 +49,7 @@ const abortBuild = async () => {
   };
   console.log(payload);
   let response = await abort(payload);
-  if (response.statusCode > 201) {
+  if (response.statusCode > 299) {
     console.error("Something went wrong");
   } else {
     console.log(chalk.green("The build was aborted successfully"));

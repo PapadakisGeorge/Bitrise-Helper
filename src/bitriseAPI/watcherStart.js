@@ -123,11 +123,6 @@ const watcherStart = async (initialBranch = "") => {
         }
       });
 
-      //If no builds are running the currentBuilds object should be empty and the program to stop.
-      if (_.isEmpty(currentBuilds)) {
-        process.exit(0);
-      }
-
       //Get the data of running builds and handle the spinners.
       [buildData, totalBuilds] = await getBranchData(
         BITRISE_BUILDS_URL,
@@ -138,6 +133,11 @@ const watcherStart = async (initialBranch = "") => {
         buildData,
         async (build) => await checkIfNewSpinnerIsNeeded(build)
       );
+
+      //If no builds are running the currentBuilds object should be empty and the program to stop.
+      if (_.isEmpty(currentBuilds)) {
+        process.exit(0);
+      }
     });
   }
 };

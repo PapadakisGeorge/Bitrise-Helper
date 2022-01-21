@@ -61,7 +61,7 @@ const triggerStart = async (initialWorkflow = "") => {
   const payload = createTriggerPayload(BRANCH, WORKFLOW, envVariables);
 
   let response = await triggerBuild(payload);
-  if (response.statusCode > 201) {
+  if (response.statusCode > 299) {
     console.log(chalk.red("Something went wrong, try again :("));
   } else {
     console.log(
