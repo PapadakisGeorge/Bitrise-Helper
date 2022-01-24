@@ -42,5 +42,5 @@ payload="{
               }
            }"
 
-curl -X POST -H "Authorization: ${ACCESS_TOKEN}" "https://api.bitrise.io/v0.1/apps/af50b4926a122ad0/builds" -d \
+curl -X POST -H "Authorization: ${ACCESS_TOKEN}" "https://api.bitrise.io/v0.1/apps/${APP_SLUG}/builds" -d \
   ${payload}

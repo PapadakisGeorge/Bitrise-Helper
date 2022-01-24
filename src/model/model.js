@@ -25,7 +25,7 @@ const TEST_SUITES = [
   "schedulePlay",
 ];
 
-const RESERVED_SESSIONS = {
+const RESERVED_SESSIONS = Object.freeze({
   Workflow_Android: 15,
   Workflow_IOS: 20,
   Workflow_Android_Edge: 10,
@@ -35,7 +35,7 @@ const RESERVED_SESSIONS = {
   Execute_IOS_Tests: 20,
   Execute_IOS_Edge_Suite_1_Tests: 15,
   Execute_IOS_Edge_Suite_2_Tests: 15,
-};
+});
 
 const STATUSES = Object.freeze({
   running: 0,

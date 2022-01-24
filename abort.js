@@ -1,5 +1,5 @@
-const { abortBuild } = require('./src/bitriseAPI/abortBuild');
+const { abortBuild } = require("./src/bitriseAPI/abortBuild");
 
 (async () => {
-    await abortBuild();
+  await abortBuild();
 })();

@@ -1,9 +1,5 @@
 const readline = require("readline-sync");
-const {
-  consoleBlue,
-  consoleRed,
-  consoleGreen,
-} = require("../utils/consoleColors");
+const chalk = require("chalk");
 const {
   WORKFLOWS,
   YES_NO_OPTIONS,
@@ -14,7 +10,7 @@ const {
 
 const { triggerBuild } = require("./triggerBuild");
 const { watcherStart } = require("./watcherStart");
-const { createPayload } = require("../utils/createPayload");
+const { createTriggerPayload } = require("../utils/createTriggerPayload");
 
 const triggerStart = async (initialWorkflow = "") => {
   let BRANCH;
@@ -26,7 +22,7 @@ const triggerStart = async (initialWorkflow = "") => {
   while (!BRANCH) {
     BRANCH = readline.question(`Enter the branch name you want to trigger:\n`);
     if (!BRANCH) {
-      console.log(consoleRed, "You need to specify a branch!");
+      console.log(chalk.red("You need to specify a branch!"));
     }
     if (!initialWorkflow) {
       while (!WORKFLOW) {
@@ -35,7 +31,7 @@ const triggerStart = async (initialWorkflow = "") => {
           `Which workflow do you want to trigger?`
         );
         if (WORKFLOW_INPUT === -1) {
-          console.log(consoleBlue, "Aborting trigger...");
+          console.log(chalk.blue("Aborting trigger..."));
           process.exit(0);
         }
         WORKFLOW = availableWorkflowsMatrix[WORKFLOW_INPUT];
@@ -60,16 +56,17 @@ const triggerStart = async (initialWorkflow = "") => {
         );
       }
       if (TEST_SUITE === -1) {
-        console.log(consoleBlue, "Will not run a specific test suite.");
+        console.log(chalk.blue("Will not run a specific test suite."));
       } else {
         TEST_SUITE_TAG = `@${TEST_SUITES[TEST_SUITE]}`;
       }
     }
     console.log(
-      consoleBlue,
-      `Triggering ${WORKFLOW} for branch ${BRANCH}. ${skippingTestsText}.${
-        TEST_SUITE_TAG ? `Running tests with tag ${TEST_SUITE_TAG}` : ""
-      }`
+      chalk.blue(
+        `Triggering ${WORKFLOW} for branch ${BRANCH}. ${skippingTestsText}.${
+          TEST_SUITE_TAG ? `Running tests with tag ${TEST_SUITE_TAG}` : ""
+        }`
+      )
     );
   }
 
@@ -84,17 +81,18 @@ const triggerStart = async (initialWorkflow = "") => {
       value: TEST_SUITE_TAG,
     },
   ];
-  const payload = createPayload(BRANCH, WORKFLOW, envVariables);
+  const payload = createTriggerPayload(BRANCH, WORKFLOW, envVariables);
 
   let response = await triggerBuild(payload);
-  if (response.statusCode > 201) {
-    console.log(consoleRed, "Something went wrong, try again :(");
+  if (response.statusCode > 299) {
+    console.log(chalk.red("Something went wrong, try again :("));
   } else {
     console.log(
-      consoleGreen,
-      `Build triggered successfully, more info: ${
-        JSON.parse(response.body).build_url
-      }`
+      chalk.green(
+        `Build triggered successfully, more info: ${
+          JSON.parse(response.body).build_url
+        }`
+      )
     );
     let shouldWatchBuilds;
     while (!shouldWatchBuilds) {
@@ -105,16 +103,15 @@ const triggerStart = async (initialWorkflow = "") => {
           limitMessage: `Type y or n!`,
         }
       );
-    }
 
-    if (NO_OPTIONS.includes(shouldWatchBuilds)) {
-      process.exit(0);
-    } else if (YES_OPTIONS.includes(shouldWatchBuilds)) {
-      await watcherStart(BRANCH);
+      if (NO_OPTIONS.includes(shouldWatchBuilds)) {
+        process.exit(0);
+      } else if (YES_OPTIONS.includes(shouldWatchBuilds)) {
+        await watcherStart(BRANCH);
+      }
     }
   }
 };
-
 module.exports = {
   triggerStart,
 };

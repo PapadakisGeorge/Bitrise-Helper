@@ -1,5 +1,5 @@
-const { capacityCheckStart } = require('./src/bitriseAPI/capacityCheckStart');
+const { capacityCheckStart } = require("./src/bitriseAPI/capacityCheckStart");
 
 (async () => {
-    await capacityCheckStart();
+  await capacityCheckStart();
 })();

@@ -1,21 +1,23 @@
 const { getData } = require("./dataFetcher");
 const { getBranchData } = require("../utils/getDataWithOptions");
-const {
-  consoleBlue,
-  consoleYellow,
-  consoleRed,
-  consoleGreen,
-} = require("../utils/consoleColors");
+const chalk = require("chalk");
 const readline = require("readline-sync");
-
 const { STATUSES } = require("../model/model");
 
-const BITRISE_BUILDS_URL =
-  "https://api.bitrise.io/v0.1/apps/af50b4926a122ad0/builds";
+const BITRISE_BUILDS_URL = `https://api.bitrise.io/v0.1/apps/${process.env.APP_SLUG}/builds`;
 
 const fetchActiveBuilds = async () => {
-  const buildsData = await getData(BITRISE_BUILDS_URL, [["status", 0]]);
-  return JSON.parse(buildsData.body).data;
+  try {
+    const rawBuildsData = await getData(BITRISE_BUILDS_URL, [["status", 0]]);
+    const buildsData = JSON.parse(rawBuildsData.body).data;
+    if (buildsData.length === 0) {
+      console.log(chalk.yellow("No branches are running at Bitrise!"));
+      process.exit(0);
+    }
+    return buildsData;
+  } catch (error) {
+    console.log(chalk.yellow("Error while fetching the active builds"));
+  }
 };
 
 const fetchActiveBranchBuilds = () => fetchBranchBuilds({ initialStatus: 0 });
@@ -26,7 +28,7 @@ const fetchBranchBuilds = async ({ initialBranch, initialStatus = "" }) => {
   while (!branch) {
     branch = readline.question(`Enter the branch name you want build for:\n`);
     if (!branch) {
-      console.log(consoleRed, "You need to specify a branch!");
+      console.log(chalk.red("You need to specify a branch!"));
     }
   }
 
@@ -36,14 +38,14 @@ const fetchBranchBuilds = async ({ initialBranch, initialStatus = "" }) => {
       `Which build status do you want to fetch?`
     );
     if (statusInput === -1) {
-      console.log(consoleBlue, "Aborting fetch...");
+      console.log(chalk.blue("Aborting fetch..."));
       process.exit(0);
     }
 
     status = STATUSES[Object.keys(STATUSES)[statusInput]];
   }
 
-  console.log(consoleBlue, `Getting builds on Bitrise of ${branch}...`);
+  console.log(CONSOLE_BLUE, `Getting builds on Bitrise of ${branch}...`);
   let [buildData, totalBuilds] = await getBranchData(
     BITRISE_BUILDS_URL,
     branch,
@@ -51,7 +53,7 @@ const fetchBranchBuilds = async ({ initialBranch, initialStatus = "" }) => {
   );
 
   if (totalBuilds === 0) {
-    console.log(consoleYellow, `No builds of ${branch} branch detected.`);
+    console.log(chalk.yellow(`No builds of ${branch} branch detected.`));
   } else {
     return buildData.map((build) => ({
       buildNumber: build.build_number,
