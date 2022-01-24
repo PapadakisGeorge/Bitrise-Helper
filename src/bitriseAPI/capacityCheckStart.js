@@ -8,22 +8,13 @@ const {
 const { getData } = require("./dataFetcher");
 const { WORKFLOWS, RESERVED_SESSIONS } = require("../model/model");
 const { triggerStart } = require("./triggerStart");
-const inquirer = require("inquirer");
+const { askQuestionList, askForWorkflow } = require("../utils/question");
 
 const capacityCheckStart = async () => {
   //Control input.
   let workflow;
-  const availableWorkflowsMatrix = Object.values(WORKFLOWS);
 
-  const workflowQuestion = await inquirer.prompt([
-    {
-      name: "workflow",
-      message: "Which workflow do you want to trigger?",
-      type: "list",
-      choices: availableWorkflowsMatrix,
-    },
-  ]);
-  workflow = workflowQuestion.workflow;
+  workflow = await askForWorkflow();
 
   // Start the actual work.
   let workflowData = {};
@@ -38,7 +29,6 @@ const capacityCheckStart = async () => {
       RESERVED_SESSIONS: RESERVED_SESSIONS[workflow],
     };
   };
-  //Get builds that are currently running, in how much time will the build end, and return the number of sessions will use when my builds will start.
 
   let occupiedSessions = 0;
 
@@ -117,15 +107,15 @@ const capacityCheckStart = async () => {
   });
 
   const sessionsYouWillNeed =
-    workflow === "workflow_Android"
-      ? Number(RESERVED_SESSIONS["workflow_Android"]) +
-        Number(RESERVED_SESSIONS["workflow_IOS"])
+    workflow === WORKFLOWS.WORKFLOW_ANDROID
+      ? Number(RESERVED_SESSIONS[WORKFLOWS.WORKFLOW_ANDROID]) +
+        Number(RESERVED_SESSIONS[WORKFLOWS.WORKFLOW_IOS])
       : Number(workflowData[workflow].RESERVED_SESSIONS);
 
   if (occupiedSessions + sessionsYouWillNeed > SESSIONS_LIMIT) {
     console.log(
       chalk.red(
-        `workflow ${workflow} will need ${sessionsYouWillNeed} sessions, so it should not be triggered at the moment :( Estimated sessions (with your build) ${
+        `Workflow ${workflow} will need ${sessionsYouWillNeed} sessions, so it should not be triggered at the moment :( Estimated sessions (with your build) ${
           occupiedSessions + sessionsYouWillNeed
         }`
       )
@@ -136,15 +126,12 @@ const capacityCheckStart = async () => {
         `${workflow} will need ${sessionsYouWillNeed} sessions, so it can be triggered!!!`
       )
     );
-    const triggerQuestion = await inquirer.prompt([
-      {
-        name: "trigger",
-        message: `Would you like to trigger the ${workflow}?`,
-        type: "list",
-        choices: ["Yes", "No"],
-      },
-    ]);
-    const shouldTriggerBuild = triggerQuestion.trigger === "Yes";
+    const triggerQuestion = await askQuestionList(
+      "trigger",
+      `Would you like to trigger the ${workflow}?`
+    );
+
+    const shouldTriggerBuild = triggerQuestion === "Yes";
 
     if (!shouldTriggerBuild) {
       process.exit(0);

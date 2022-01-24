@@ -15,58 +15,34 @@ const cron = require("node-cron");
 const _ = require("lodash");
 
 const Spinners = require("spinnies");
-const inquirer = require("inquirer");
+const { askQuestionList, askForBranch } = require("../utils/question");
 const LIST_OPTION = "Select from a list";
 const MANUAL_INPUT_OPTION = "Enter manually";
 
 const watcherStart = async (initialBranch = "") => {
   let branchName = initialBranch;
-  while (!branchName) {
-    let manualOrListQuestion = await inquirer.prompt([
-      {
-        name: "manualOrList",
-        message:
-          "Do you want to select a branch from a list or enter the branch name manually?",
-        type: "list",
-        choices: [LIST_OPTION, MANUAL_INPUT_OPTION],
-      },
-    ]);
 
-    const getFromList = manualOrListQuestion.manualOrList === LIST_OPTION;
+  let manualOrListQuestion = await askQuestionList(
+    "manualOrList",
+    "Do you want to select a branch from a list or enter the branch name manually?",
+    [LIST_OPTION, MANUAL_INPUT_OPTION]
+  );
 
-    if (getFromList) {
-      console.log(chalk.blue("Fetching active builds..."));
-      const activeBuilds = await fetchActiveBuilds();
-      const activeBranchNamesList = _.uniq(
-        activeBuilds.map((build) => build.branch)
-      );
-      let selectBranchQuestion = await inquirer.prompt([
-        {
-          name: "branch",
-          message: "Select the branch you want to watch:",
-          type: "list",
-          choices: activeBranchNamesList,
-        },
-      ]);
-      branchName = selectBranchQuestion.branch;
-    } else {
-      const branchQuestion = await inquirer.prompt([
-        {
-          name: "branch",
-          message:
-            "Enter the branch name, or part of it, that you want to watch:\n",
-          type: "input",
-          validate(answer) {
-            if (!answer) {
-              return "You need to specify a branch!";
-            }
-            return true;
-          },
-        },
-      ]);
-      branchName = branchQuestion.branch;
-    }
-  }
+  const getFromList = manualOrListQuestion === LIST_OPTION;
+
+  if (getFromList) {
+    console.log(chalk.blue("Fetching active builds..."));
+    const activeBuilds = await fetchActiveBuilds();
+    const activeBranchNamesList = _.uniq(
+      activeBuilds.map((build) => build.branch)
+    );
+    branchName = await askQuestionList(
+      "branch",
+      "Select the branch you want to watch:",
+      activeBranchNamesList
+    );
+  } else branchName = await askForBranch();
+
   console.log(
     chalk.blue(
       `Getting builds on Bitrise of ${branchName} currently running...`

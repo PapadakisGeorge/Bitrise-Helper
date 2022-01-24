@@ -1,8 +1,8 @@
 const { POSTRequestWrapper } = require("./helper");
 const { fetchActiveBuilds } = require("./fetchBuilds");
+const { askQuestionInput, askQuestionList } = require("../utils/question");
 
 const chalk = require("chalk");
-const inquirer = require("inquirer");
 const { map } = require("p-iteration");
 
 const findBuildNumber = async () => {
@@ -10,32 +10,21 @@ const findBuildNumber = async () => {
   const builds = await fetchActiveBuilds();
   const buildNumbers = await map(builds, async (build) => build.build_number);
 
-  const buildNumberKnownInputQuestion = await inquirer.prompt([
-    {
-      name: "buildNumberKnown",
-      message: `Do you know the build number of the build you want to abort?`,
-      type: "list",
-      choices: ["Yes", "No"],
-    },
-  ]);
-  const isBuildNumberKnown =
-    buildNumberKnownInputQuestion.buildNumberKnown === "Yes";
+  const buildNumberKnownInputQuestion = await askQuestionList(
+    "buildNumberKnown",
+    "Do you know the build number of the build you want to abort?"
+  );
+
+  const isBuildNumberKnown = buildNumberKnownInputQuestion === "Yes";
 
   if (isBuildNumberKnown) {
-    const buildNumberQuestion = await inquirer.prompt([
-      {
-        name: "buildNumber",
-        message: "Please enter the build you want to abort:",
-        type: "input",
-        validate(answer) {
-          if (isNaN(Number(answer))) {
-            return "You need to enter the build number!";
-          }
-          return true;
-        },
-      },
-    ]);
-    buildNumber = buildNumberQuestion.buildNumber;
+    const buildNumber = await askQuestionInput(
+      "buildNumber",
+      "Please enter the build you want to abort:",
+      "You need to enter the build number!",
+      "number"
+    );
+
     if (buildNumbers.includes(buildNumber)) {
       return builds.filter((build) => build.buildNumber == buildNumber)[0]
         .buildSlug;
@@ -48,15 +37,12 @@ const findBuildNumber = async () => {
       process.exit(0);
     }
   } else {
-    let buildNumberInput = inquirer.prompt([
-      {
-        name: "buildNumber",
-        message: "Please select the build you want to abort:",
-        type: "list",
-        choices: buildNumbers,
-      },
-    ]);
-    buildNumber = buildNumberInput.buildNumber;
+    buildNumber = await askQuestionList(
+      "buildNumber",
+      "Please select the build you want to abort:\n",
+      buildNumbers
+    );
+
     return builds.filter(
       (build) => build.buildNumber == buildNumbers[buildNumberInput]
     )[0].buildSlug;
@@ -65,20 +51,12 @@ const findBuildNumber = async () => {
 
 const abortBuild = async () => {
   const buildSlug = await findBuildNumber();
-  const abortReasonQuestion = inquirer.prompt([
-    {
-      name: "abortReason",
-      message: "Please add an abort reason:\n",
-      type: "input",
-      validate(answer) {
-        if (!answer) {
-          return "You need to add an abort reason!";
-        }
-        return true;
-      },
-    },
-  ]);
-  const abortReason = abortReasonQuestion.abortReason;
+  const abortReason = await askQuestionInput(
+    "abortReason",
+    "Please add an abort reason:\n",
+    "You need to add an abort reason!"
+  );
+
   const payload = {
     buildSlug,
     "build-abort-params": {
