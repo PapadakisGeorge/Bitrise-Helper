@@ -1,4 +1,3 @@
-const readline = require("readline-sync");
 const packageJSON = require("./package.json");
 const { runChildProcess } = require("./src/utils/shellCommand");
 

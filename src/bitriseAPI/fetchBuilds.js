@@ -1,8 +1,8 @@
 const { getData } = require("./dataFetcher");
 const { getBranchData } = require("../utils/getDataWithOptions");
 const chalk = require("chalk");
-const readline = require("readline-sync");
 const { STATUSES } = require("../model/model");
+const inquirer = require("inquirer");
 
 const BITRISE_BUILDS_URL = `https://api.bitrise.io/v0.1/apps/${process.env.APP_SLUG}/builds`;
 
@@ -25,27 +25,36 @@ const fetchActiveBranchBuilds = () => fetchBranchBuilds({ initialStatus: 0 });
 const fetchBranchBuilds = async ({ initialBranch, initialStatus = "" }) => {
   let status = initialStatus;
   let branch = initialBranch;
-  while (!branch) {
-    branch = readline.question(`Enter the branch name you want build for:\n`);
-    if (!branch) {
-      console.log(chalk.red("You need to specify a branch!"));
-    }
+  if (!branch) {
+    const branchQuestion = await inquirer.prompt([
+      {
+        name: "branch",
+        message: "Enter the branch name you want build for:\n",
+        type: "input",
+        validate(answer) {
+          if (!answer) {
+            return "You need to specify a branch!";
+          }
+          return true;
+        },
+      },
+    ]);
+    branch = branchQuestion.branch;
   }
 
   while (typeof status !== "number") {
-    let statusInput = readline.keyInSelect(
-      Object.keys(STATUSES),
-      `Which build status do you want to fetch?`
-    );
-    if (statusInput === -1) {
-      console.log(chalk.blue("Aborting fetch..."));
-      process.exit(0);
-    }
-
-    status = STATUSES[Object.keys(STATUSES)[statusInput]];
+    const statusQuestion = await inquirer.prompt([
+      {
+        name: "statusSTATUSES",
+        message: "Which build status do you want to fetch?\n",
+        type: "list",
+        choices: Object.keys(STATUSES),
+      },
+    ]);
+    status = STATUSES[Object.keys(STATUSES)[statusQuestion.status]];
   }
 
-  console.log(CONSOLE_BLUE, `Getting builds on Bitrise of ${branch}...`);
+  console.log(chalk.blue(`Getting builds on Bitrise of ${branch}...`));
   let [buildData, totalBuilds] = await getBranchData(
     BITRISE_BUILDS_URL,
     branch,

@@ -5,67 +5,84 @@ const {
   updateSpinnerText,
   startSpinner,
 } = require("../utils/spinners");
-const chalk = require("chalk");
-const readline = require("readline-sync");
-
-const { forEach } = require("p-iteration");
-const Spinners = require("spinnies");
-const cron = require("node-cron");
-const _ = require("lodash");
 const { shellExec } = require("../utils/shellCommand");
 const { approximateFinish } = require("../utils/runTime");
 const { fetchActiveBuilds } = require("./fetchBuilds");
 
+const chalk = require("chalk");
+const { forEach } = require("p-iteration");
+const cron = require("node-cron");
+const _ = require("lodash");
+
+const Spinners = require("spinnies");
+const inquirer = require("inquirer");
 const LIST_OPTION = "Select from a list";
 const MANUAL_INPUT_OPTION = "Enter manually";
 
 const watcherStart = async (initialBranch = "") => {
-  let BRANCH = initialBranch;
-  while (!BRANCH) {
-    let branchNameKnownInput = readline.keyInSelect(
-      [LIST_OPTION, MANUAL_INPUT_OPTION],
-      "Do you want to select a branch from a list or enter the branch name manually?:\n"
-    );
+  let branchName = initialBranch;
+  while (!branchName) {
+    let manualOrListQuestion = await inquirer.prompt([
+      {
+        name: "manualOrList",
+        message:
+          "Do you want to select a branch from a list or enter the branch name manually?",
+        type: "list",
+        choices: [LIST_OPTION, MANUAL_INPUT_OPTION],
+      },
+    ]);
 
-    if (branchNameKnownInput === 0) {
+    const getFromList = manualOrListQuestion.manualOrList === LIST_OPTION;
+
+    if (getFromList) {
       console.log(chalk.blue("Fetching active builds..."));
       const activeBuilds = await fetchActiveBuilds();
       const activeBranchNamesList = _.uniq(
         activeBuilds.map((build) => build.branch)
       );
-      let branchSelection = readline.keyInSelect(
-        activeBranchNamesList,
-        "Select the branch you want to watch"
-      );
-      if (branchSelection === -1) {
-        process.exit(0);
-      } else {
-        BRANCH = activeBranchNamesList[branchSelection];
-      }
-    } else if (branchNameKnownInput === 1) {
-      BRANCH = readline.question(
-        `Enter the branch name, or part of it, that you want to watch:\n`
-      );
-      if (!BRANCH) {
-        console.log(chalk.red("You need to specify a branch!"));
-      }
+      let selectBranchQuestion = await inquirer.prompt([
+        {
+          name: "branch",
+          message: "Select the branch you want to watch:",
+          type: "list",
+          choices: activeBranchNamesList,
+        },
+      ]);
+      branchName = selectBranchQuestion.branch;
+    } else {
+      const branchQuestion = await inquirer.prompt([
+        {
+          name: "branch",
+          message:
+            "Enter the branch name, or part of it, that you want to watch:\n",
+          type: "input",
+          validate(answer) {
+            if (!answer) {
+              return "You need to specify a branch!";
+            }
+            return true;
+          },
+        },
+      ]);
+      branchName = branchQuestion.branch;
     }
   }
-
   console.log(
-    chalk.blue(`Getting builds on Bitrise of ${BRANCH} currently running...`)
+    chalk.blue(
+      `Getting builds on Bitrise of ${branchName} currently running...`
+    )
   );
 
   //Get data for running builds when the script is initiated
   const BITRISE_BUILDS_URL = `https://api.bitrise.io/v0.1/apps/${process.env.APP_SLUG}/builds`;
   let [buildData, totalBuilds] = await getBranchData(
     BITRISE_BUILDS_URL,
-    BRANCH,
+    branchName,
     0
   );
 
   if (totalBuilds === 0) {
-    console.log(chalk.yellow(`No builds of ${BRANCH} branch detected.`));
+    console.log(chalk.yellow(`No builds of ${branchName} branch detected.`));
     process.exit(0);
   } else {
     if (totalBuilds === 1) console.log(chalk.green(`Build detected!`));
@@ -133,7 +150,7 @@ const watcherStart = async (initialBranch = "") => {
       //Get the data of running builds and handle the spinners.
       [buildData, totalBuilds] = await getBranchData(
         BITRISE_BUILDS_URL,
-        BRANCH,
+        branchName,
         0
       );
       await forEach(
