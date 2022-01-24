@@ -2,7 +2,6 @@ const { getData } = require("./dataFetcher");
 const { getBranchData } = require("../utils/getDataWithOptions");
 const chalk = require("chalk");
 const readline = require("readline-sync");
-
 const { STATUSES } = require("../model/model");
 
 const BITRISE_BUILDS_URL = `https://api.bitrise.io/v0.1/apps/${process.env.APP_SLUG}/builds`;
