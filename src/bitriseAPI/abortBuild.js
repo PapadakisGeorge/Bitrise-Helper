@@ -36,7 +36,6 @@ const findBuildNumber = async () => {
       },
     ]);
     buildNumber = buildNumberQuestion.buildNumber;
-    console.log(buildNumbers);
     if (buildNumbers.includes(buildNumber)) {
       return builds.filter((build) => build.buildNumber == buildNumber)[0]
         .buildSlug;
@@ -86,7 +85,6 @@ const abortBuild = async () => {
       abort_reason: abortReason,
     },
   };
-  console.log(payload);
   let response = await abort(payload);
   if (response.statusCode > 299) {
     console.error("Something went wrong");
