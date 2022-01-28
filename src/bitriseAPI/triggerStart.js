@@ -8,53 +8,52 @@ const {
 } = require("../utils/question");
 
 const triggerStart = async (initialWorkflow = "") => {
-  let workflow;
+  let workflow = initialWorkflow;
   let skipTests;
 
   const branchName = await askForBranch();
 
   if (!initialWorkflow) {
     workflow = await askForWorkflow();
+  }
+  const skipTestsQuestion = await askQuestionList("skipTests", "Skip tests?");
 
-    const skipTestsQuestion = await askQuestionList("skipTests", "Skip tests?");
+  skipTests = skipTestsQuestion === "Yes" ? "true" : "false";
+  const skippingTestsText =
+    skipTests === "true" ? "Tests will be skipped" : "Tests will run";
+  console.log(
+    `Triggering ${workflow} for branch ${branchName}. ${skippingTestsText}`
+  );
 
-    skipTests = skipTestsQuestion === "Yes" ? "true" : "false";
-    const skippingTestsText =
-      skipTests === "true" ? "Tests will be skipped" : "Tests will run";
+  const envVariables = [
+    {
+      is_expand: true,
+      mapped_to: "SKIP_TESTS",
+      value: skipTests,
+    },
+  ];
+  const payload = createTriggerPayload(branchName, workflow, envVariables);
+
+  let response = await triggerBuild(payload);
+  if (response.statusCode > 299) {
+    console.log("Something went wrong, try again :(");
+  } else {
     console.log(
-      `Triggering ${workflow} for branch ${branchName}. ${skippingTestsText}`
+      `Build triggered successfully, more info: ${
+        JSON.parse(response.body).build_url
+      }`
     );
+  }
 
-    const envVariables = [
-      {
-        is_expand: true,
-        mapped_to: "SKIP_TESTS",
-        value: skipTests,
-      },
-    ];
-    const payload = createTriggerPayload(branchName, workflow, envVariables);
+  let shouldWatchBuilds = await askQuestionList(
+    "watcher",
+    "Would you like to watch the build?"
+  );
 
-    let response = await triggerBuild(payload);
-    if (response.statusCode > 299) {
-      console.log("Something went wrong, try again :(");
-    } else {
-      console.log(
-        `Build triggered successfully, more info: ${
-          JSON.parse(response.body).build_url
-        }`
-      );
-    }
-
-    let shouldWatchBuilds = await askQuestionList(
-      "watcher",
-      "Would you like to watch the build?"
-    );
-
-    if (shouldWatchBuilds === "Yes") {
-      await watcherStart(branchName);
-    } else {
-      process.exit(0);
-    }
+  if (shouldWatchBuilds === "Yes") {
+    await watcherStart(branchName);
+  } else {
+    process.exit(0);
   }
 };
 

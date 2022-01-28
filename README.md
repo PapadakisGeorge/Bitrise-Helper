@@ -1,6 +1,7 @@
 # Bitrise-Helper
 ### Various Bitrise helpers
 
+More information can be found here https://api-docs.bitrise.io/#/builds/build-log
 1) Run ```npm install```.
 
 
