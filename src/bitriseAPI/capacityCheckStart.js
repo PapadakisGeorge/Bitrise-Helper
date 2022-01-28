@@ -82,7 +82,7 @@ const capacityCheckStart = async () => {
     ) {
       occupiedSessions += workflowData[buildName].RESERVED_SESSIONS;
       saveBuildData(build, approximateEndTime);
-    } else if (buildName.includes("workflow")) {
+    } else if (buildName.includes("Workflow")) {
       if (!checkIfSkipTestsWasUsed(build)) {
         occupiedSessions += Number(workflowData[buildName].RESERVED_SESSIONS);
         saveBuildData(build, approximateEndTime);
