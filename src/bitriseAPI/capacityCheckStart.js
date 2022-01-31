@@ -1,5 +1,4 @@
 const chalk = require("chalk");
-const readline = require("readline-sync");
 
 const { forEach } = require("p-iteration");
 const {
@@ -7,31 +6,16 @@ const {
   approximateFinish,
 } = require("../utils/runTime");
 const { getData } = require("./dataFetcher");
-const {
-  WORKFLOWS,
-  YES_NO_OPTIONS,
-  YES_OPTIONS,
-  NO_OPTIONS,
-  RESERVED_SESSIONS,
-} = require("../model/model");
+const { WORKFLOWS, RESERVED_SESSIONS } = require("../model/model");
 const { triggerStart } = require("./triggerStart");
+const { askQuestionList, askForWorkflow } = require("../utils/question");
 
 const capacityCheckStart = async () => {
   //Control input.
-  let WORKFLOW;
-  const availableWorkflowsMatrix = Object.values(WORKFLOWS);
+  let workflow;
 
-  while (!WORKFLOW) {
-    let WORKFLOW_INPUT = readline.keyInSelect(
-      availableWorkflowsMatrix,
-      `Which workflow do you want to trigger?`
-    );
-    if (WORKFLOW_INPUT === -1) {
-      console.log(chalk.blue("Aborting trigger..."));
-      process.exit(0);
-    }
-    WORKFLOW = availableWorkflowsMatrix[WORKFLOW_INPUT];
-  }
+  workflow = await askForWorkflow();
+
   // Start the actual work.
   let workflowData = {};
 
@@ -45,7 +29,6 @@ const capacityCheckStart = async () => {
       RESERVED_SESSIONS: RESERVED_SESSIONS[workflow],
     };
   };
-  //Get builds that are currently running, in how much time will the build end, and return the number of sessions will use when my builds will start.
 
   let occupiedSessions = 0;
 
@@ -85,7 +68,7 @@ const capacityCheckStart = async () => {
       return false;
     }
   };
-  await getTimeAndReservedSessions(WORKFLOW);
+  await getTimeAndReservedSessions(workflow);
   await forEach(filteredBuilds, async (build) => {
     const buildName = build.triggered_workflow;
     const approximateEndTime = await approximateFinish(
@@ -95,7 +78,7 @@ const capacityCheckStart = async () => {
     if (
       buildName.includes("Execute") &&
       Number(approximateEndTime) >
-        Number(workflowData[WORKFLOW].approximateTriggerTime)
+        Number(workflowData[workflow].approximateTriggerTime)
     ) {
       occupiedSessions += workflowData[buildName].RESERVED_SESSIONS;
       saveBuildData(build, approximateEndTime);
@@ -124,15 +107,15 @@ const capacityCheckStart = async () => {
   });
 
   const sessionsYouWillNeed =
-    WORKFLOW === "Workflow_Android"
-      ? Number(RESERVED_SESSIONS["Workflow_Android"]) +
-        Number(RESERVED_SESSIONS["Workflow_IOS"])
-      : Number(workflowData[WORKFLOW].RESERVED_SESSIONS);
+    workflow === WORKFLOWS.WORKFLOW_ANDROID
+      ? Number(RESERVED_SESSIONS[WORKFLOWS.WORKFLOW_ANDROID]) +
+        Number(RESERVED_SESSIONS[WORKFLOWS.WORKFLOW_IOS])
+      : Number(workflowData[workflow].RESERVED_SESSIONS);
 
   if (occupiedSessions + sessionsYouWillNeed > SESSIONS_LIMIT) {
     console.log(
       chalk.red(
-        `Workflow ${WORKFLOW} will need ${sessionsYouWillNeed} sessions, so it should not be triggered at the moment :( Estimated sessions (with your build) ${
+        `Workflow ${workflow} will need ${sessionsYouWillNeed} sessions, so it should not be triggered at the moment :( Estimated sessions (with your build) ${
           occupiedSessions + sessionsYouWillNeed
         }`
       )
@@ -140,24 +123,20 @@ const capacityCheckStart = async () => {
   } else {
     console.log(
       chalk.green(
-        `${WORKFLOW} will need ${sessionsYouWillNeed} sessions, so it can be triggered!!!`
+        `${workflow} will need ${sessionsYouWillNeed} sessions, so it can be triggered!!!`
       )
     );
-    let shouldTriggerBuild;
-    while (!shouldTriggerBuild) {
-      shouldTriggerBuild = readline.question(
-        `Would you like to trigger the ${WORKFLOW}? (y/n):\n`,
-        {
-          limit: YES_NO_OPTIONS,
-          limitMessage: `Type y or n!`,
-        }
-      );
-    }
+    const triggerQuestion = await askQuestionList(
+      "trigger",
+      `Would you like to trigger the ${workflow}?`
+    );
 
-    if (NO_OPTIONS.includes(shouldTriggerBuild)) {
+    const shouldTriggerBuild = triggerQuestion === "Yes";
+
+    if (!shouldTriggerBuild) {
       process.exit(0);
-    } else if (YES_OPTIONS.includes(shouldTriggerBuild)) {
-      await triggerStart(WORKFLOW);
+    } else {
+      await triggerStart(workflow);
     }
   }
 };

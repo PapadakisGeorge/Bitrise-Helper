@@ -1,53 +1,68 @@
 const { POSTRequestWrapper } = require("./helper");
-const readline = require("readline-sync");
+const { fetchActiveBuilds } = require("./fetchBuilds");
+const { askQuestionInput, askQuestionList } = require("../utils/question");
+
 const chalk = require("chalk");
-const { YES_NO_OPTIONS, YES_OPTIONS, NO_OPTIONS } = require("../model/model");
-const { fetchActiveBranchBuilds } = require("./fetchBuilds");
+const { map } = require("p-iteration");
 
 const findBuildNumber = async () => {
   let buildNumber;
-  const builds = await fetchActiveBranchBuilds();
-  while (!buildNumber) {
-    let buildNumberKnownInput = readline.question(
-      "Do you know the build number of the build you want to abort? (y/n):\n",
-      {
-        limit: YES_NO_OPTIONS,
-        limitMessage: `Type y or n!`,
-      }
+  const builds = await fetchActiveBuilds();
+  const buildNumbers = await map(builds, async (build) => build.build_number);
+
+  const buildNumberKnownInputQuestion = await askQuestionList(
+    "buildNumberKnown",
+    "Do you know the build number of the build you want to abort?"
+  );
+
+  const isBuildNumberKnown = buildNumberKnownInputQuestion === "Yes";
+
+  if (isBuildNumberKnown) {
+    const buildNumber = await askQuestionInput(
+      "buildNumber",
+      "Please enter the build you want to abort:",
+      "You need to enter the build number!",
+      "number"
     );
 
-    if (YES_OPTIONS.includes(buildNumberKnownInput)) {
-      while (!buildNumber) {
-        buildNumber = readline.question(
-          "Please enter the build you want to abort:\n"
-        );
-      }
+    if (buildNumbers.includes(buildNumber)) {
       return builds.filter((build) => build.buildNumber == buildNumber)[0]
         .buildSlug;
-    } else if (NO_OPTIONS.includes(buildNumberKnownInput)) {
-      const buildNumbers = builds.map((build) => build.buildNumber);
-      let buildNumberInput = readline.keyInSelect(
-        buildNumbers,
-        `Please select the build you want to abort`
+    } else {
+      console.log(
+        chalk.red(
+          `No workflow with build number ${buildNumber} is running. Try again.`
+        )
       );
-      if (buildNumberInput === -1) process.exit(0);
-      return builds.filter(
-        (build) => build.buildNumber == buildNumbers[buildNumberInput]
-      )[0].buildSlug;
+      process.exit(0);
     }
+  } else {
+    buildNumber = await askQuestionList(
+      "buildNumber",
+      "Please select the build you want to abort:\n",
+      buildNumbers
+    );
+
+    return builds.filter(
+      (build) => build.buildNumber == buildNumbers[buildNumberInput]
+    )[0].buildSlug;
   }
 };
 
 const abortBuild = async () => {
   const buildSlug = await findBuildNumber();
-  const abortReason = readline.question("Please add an abort reason:\n");
+  const abortReason = await askQuestionInput(
+    "abortReason",
+    "Please add an abort reason:\n",
+    "You need to add an abort reason!"
+  );
+
   const payload = {
     buildSlug,
     "build-abort-params": {
       abort_reason: abortReason,
     },
   };
-  console.log(payload);
   let response = await abort(payload);
   if (response.statusCode > 299) {
     console.error("Something went wrong");
@@ -58,19 +73,10 @@ const abortBuild = async () => {
 };
 
 const abort = async (payload) => {
-  try {
-    return await POSTRequestWrapper(
-      `https://api.bitrise.io/v0.1/apps/af50b4926a122ad0/builds/${payload.buildSlug}/abort`,
-      payload["build-abort-params"]
-    );
-  } catch (error) {
-    console.log(
-      chalk.red(
-        `Request encountered the following error while posting data with error: ${error.message}`
-      )
-    );
-    return error;
-  }
+  return await POSTRequestWrapper(
+    `https://api.bitrise.io/v0.1/apps/af50b4926a122ad0/builds/${payload.buildSlug}/abort`,
+    payload["build-abort-params"]
+  );
 };
 
 module.exports = {
