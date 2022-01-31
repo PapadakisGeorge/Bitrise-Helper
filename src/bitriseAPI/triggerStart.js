@@ -1,78 +1,62 @@
-const readline = require('readline-sync');
+const { triggerBuild } = require("./triggerBuild");
+const { watcherStart } = require("./watcherStart");
+const { createTriggerPayload } = require("../utils/createTriggerPayload");
 const {
-    CONSOLE_BLUE,
-    CONSOLE_RED, CONSOLE_GREEN,
-} = require('../model/model');
-const {WORKFLOWS, YES_NO_OPTIONS, YES_OPTIONS, NO_OPTIONS} = require('../model/model');
+  askQuestionList,
+  askForWorkflow,
+  askForBranch,
+} = require("../utils/question");
 
-const {triggerBuild} = require("./triggerBuild");
-const {watcherStart} = require("./watcherStart");
-const {createTriggerPayload} = require("../utils/createTriggerPayload");
+const triggerStart = async (initialWorkflow = "") => {
+  let workflow = initialWorkflow;
+  let skipTests;
 
-const triggerStart = async (initialWorkflow = '') => {
-    let BRANCH;
-    let WORKFLOW = initialWorkflow;
-    let SKIP_TESTS;
-    const availableWorkflowsMatrix = Object.values(WORKFLOWS);
-    while (!BRANCH) {
-        BRANCH = readline.question(`Enter the branch name you want to trigger:\n`,);
-        if (!BRANCH) {
-            console.log(CONSOLE_RED, 'You need to specify a branch!')
-        }
-        if (!initialWorkflow) {
-            while (!WORKFLOW) {
-                let WORKFLOW_INPUT = readline.keyInSelect(availableWorkflowsMatrix, `Which workflow do you want to trigger?`);
-                if (WORKFLOW_INPUT === -1) {
-                    console.log(CONSOLE_BLUE, 'Aborting trigger...');
-                    process.exit(0)
-                }
-                WORKFLOW = availableWorkflowsMatrix[WORKFLOW_INPUT];
-            }
-        }
-        while (!SKIP_TESTS) {
-            SKIP_TESTS = readline.question(`Skip tests? (y/n):\n`, {
-                limit: YES_NO_OPTIONS,
-                limitMessage: `Type y or n!`
-            });
-        }
+  const branchName = await askForBranch();
 
+  if (!initialWorkflow) {
+    workflow = await askForWorkflow();
+  }
+  const skipTestsQuestion = await askQuestionList("skipTests", "Skip tests?");
 
-        const skippingTestsText = YES_OPTIONS.includes(SKIP_TESTS) ? 'Tests will be skipped' : 'Tests will run'
-        console.log(CONSOLE_BLUE, `Triggering ${WORKFLOW} for branch ${BRANCH}. ${skippingTestsText}`);
-    }
+  skipTests = skipTestsQuestion === "Yes" ? "true" : "false";
+  const skippingTestsText =
+    skipTests === "true" ? "Tests will be skipped" : "Tests will run";
+  console.log(
+    `Triggering ${workflow} for branch ${branchName}. ${skippingTestsText}`
+  );
 
-    const envVariables = [
-        {
-            "is_expand": true,
-            "mapped_to": "SKIP_TESTS",
-            "value": YES_OPTIONS.includes(SKIP_TESTS) ? "true" : "false"
-        },
-    ]
-    const payload = createTriggerPayload(BRANCH, WORKFLOW, envVariables);
+  const envVariables = [
+    {
+      is_expand: true,
+      mapped_to: "SKIP_TESTS",
+      value: skipTests,
+    },
+  ];
+  const payload = createTriggerPayload(branchName, workflow, envVariables);
 
-    let response = await triggerBuild(payload);
-    if
-    (response.statusCode > 201
-    ) {
-        console.log(CONSOLE_RED, 'Something went wrong, try again :(')
-    } else {
-        console.log(CONSOLE_GREEN, `Build triggered successfully, more info: ${JSON.parse(response.body).build_url}`);
-        let shouldWatchBuilds;
-        while (!shouldWatchBuilds) {
-            shouldWatchBuilds = readline.question(`Would you like to watch the build? (y/n):\n`, {
-                limit: YES_NO_OPTIONS,
-                limitMessage: `Type y or n!`
-            });
-        }
+  let response = await triggerBuild(payload);
+  if (response.statusCode > 299) {
+    console.log("Something went wrong, try again :(");
+  } else {
+    console.log(
+      `Build triggered successfully, more info: ${
+        JSON.parse(response.body).build_url
+      }`
+    );
+  }
 
-        if (NO_OPTIONS.includes(shouldWatchBuilds)) {
-            process.exit(0);
-        } else if (YES_OPTIONS.includes(shouldWatchBuilds)) {
-            await watcherStart(BRANCH)
-        }
-    }
-}
+  let shouldWatchBuilds = await askQuestionList(
+    "watcher",
+    "Would you like to watch the build?"
+  );
+
+  if (shouldWatchBuilds === "Yes") {
+    await watcherStart(branchName);
+  } else {
+    process.exit(0);
+  }
+};
 
 module.exports = {
-    triggerStart
-}
+  triggerStart,
+};

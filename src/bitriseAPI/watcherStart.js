@@ -5,75 +5,67 @@ const {
   updateSpinnerText,
   startSpinner,
 } = require("../utils/spinners");
-const {
-    CONSOLE_BLUE,
-    CONSOLE_YELLOW,
-    CONSOLE_RED,
-    CONSOLE_GREEN
-} = require('../model/model');
-const readline = require('readline-sync');
-
-const { forEach } = require("p-iteration");
-const Spinners = require("spinnies");
-const cron = require("node-cron");
-const _ = require("lodash");
 const { shellExec } = require("../utils/shellCommand");
 const { approximateFinish } = require("../utils/runTime");
 const { fetchActiveBuilds } = require("./fetchBuilds");
 
+const chalk = require("chalk");
+const { forEach, map } = require("p-iteration");
+const cron = require("node-cron");
+const _ = require("lodash");
+
+const Spinners = require("spinnies");
+const { askQuestionList, askForBranch } = require("../utils/question");
 const LIST_OPTION = "Select from a list";
 const MANUAL_INPUT_OPTION = "Enter manually";
 
 const watcherStart = async (initialBranch = "") => {
-  let BRANCH = initialBranch;
-  while (!BRANCH) {
-    let branchNameKnownInput = readline.keyInSelect(
-      [LIST_OPTION, MANUAL_INPUT_OPTION],
-      "Do you want to select a branch from a list or enter the branch name manually?:\n"
+  let branchName = initialBranch;
+
+  if (!branchName) {
+    let manualOrListQuestion = await askQuestionList(
+      "manualOrList",
+      "Do you want to select a branch from a list or enter the branch name manually?",
+      [LIST_OPTION, MANUAL_INPUT_OPTION]
     );
 
-    if (branchNameKnownInput === 0) {
-      console.log(CONSOLE_BLUE, "Fetching active builds...");
-      const activeBuilds = await fetchActiveBuilds();
-      const activeBranchNamesList = _.uniq(
-        activeBuilds.map((build) => build.branch)
-      );
-      let branchSelection = readline.keyInSelect(
-        activeBranchNamesList,
-        "Select the branch you want to watch"
-      );
-      if (branchSelection === -1) {
-        process.exit(0);
-      } else {
-        BRANCH = activeBranchNamesList[branchSelection];
-      }
-    } else if (branchNameKnownInput === 1) {
-      BRANCH = readline.question(
-        `Enter the branch name, or part of it, that you want to watch:\n`
-      );
-      if (!BRANCH) {
-        console.log(CONSOLE_RED, "You need to specify a branch!");
-      }
-    }
-  }
+    const getFromList = manualOrListQuestion === LIST_OPTION;
 
-    console.log(CONSOLE_BLUE, `Getting builds on Bitrise of ${BRANCH} currently running...`);
+    if (getFromList) {
+      console.log(chalk.blue("Fetching active builds..."));
+      const activeBuildsRawData = await fetchActiveBuilds();
+      const activeBuilds = await map(
+        activeBuildsRawData,
+        async (build) => build.branch
+      );
+      const activeBranchNamesList = _.uniq(activeBuilds);
+      branchName = await askQuestionList(
+        "branch",
+        "Select the branch you want to watch:",
+        activeBranchNamesList
+      );
+    } else branchName = await askForBranch();
+  }
+  console.log(
+    chalk.blue(
+      `Getting builds on Bitrise of ${branchName} currently running...`
+    )
+  );
 
   //Get data for running builds when the script is initiated
-  const BITRISE_BUILDS_URL =
-    "https://api.bitrise.io/v0.1/apps/af50b4926a122ad0/builds";
+  const BITRISE_BUILDS_URL = `https://api.bitrise.io/v0.1/apps/${process.env.APP_SLUG}/builds`;
   let [buildData, totalBuilds] = await getBranchData(
     BITRISE_BUILDS_URL,
-    BRANCH,
+    branchName,
     0
   );
 
   if (totalBuilds === 0) {
-    console.log(CONSOLE_YELLOW, `No builds of ${BRANCH} branch detected.`);
+    console.log(chalk.yellow(`No builds of ${branchName} branch detected.`));
     process.exit(0);
   } else {
-    if (totalBuilds === 1) console.log(CONSOLE_GREEN, `Build detected!`);
-    else console.log(CONSOLE_GREEN, `Builds detected!`);
+    if (totalBuilds === 1) console.log(chalk.green(`Build detected!`));
+    else console.log(chalk.green(`Builds detected!`));
 
     const spinners = new Spinners();
     let currentBuilds = {};
@@ -82,8 +74,8 @@ const watcherStart = async (initialBranch = "") => {
       const buildNumber = build.build_number;
       if (!(buildNumber in currentBuilds)) {
         const finishTime = await approximateFinish(
-            build.triggered_at,
-            build.triggered_workflow
+          build.triggered_at,
+          build.triggered_workflow
         );
         currentBuilds[buildNumber] = {};
         currentBuilds[buildNumber].url = build.slug;
@@ -105,21 +97,28 @@ const watcherStart = async (initialBranch = "") => {
           ["build_number", buildNumber],
         ]);
         const buildData = JSON.parse(rawData.body).data[0];
-
-        if (buildData.status !== 0) {
+        const buildStatus = buildData.status;
+        if (buildStatus !== 0) {
           const buildURL = currentBuilds[buildNumber].url;
           stopSpinner(
             buildNumber,
             buildData.triggered_workflow,
-            buildData.status,
+            buildStatus,
             buildURL,
             spinners
           );
           delete currentBuilds[buildNumber];
-          shellExec(
-            'osascript -e "display notification \\"Build finished!\\" with title \\"BITRISE BUILD\\""'
-          );
-          shellExec("say Builds finished!");
+          if (buildStatus === 2) {
+            shellExec(
+              'osascript -e "display notification \\"Build failed!\\" with title \\"BITRISE BUILD\\""'
+            );
+            shellExec("say Builds failed!");
+          } else {
+            shellExec(
+              'osascript -e "display notification \\"Build finished!\\" with title \\"BITRISE BUILD\\""'
+            );
+            shellExec("say Builds finished!");
+          }
         } else {
           const finishTime = currentBuilds[buildNumber].finishTime - 1;
           currentBuilds[buildNumber].finishTime = finishTime;
@@ -127,21 +126,21 @@ const watcherStart = async (initialBranch = "") => {
         }
       });
 
-      //If no builds are running the currentBuilds object should be empty and the program to stop.
-      if (_.isEmpty(currentBuilds)) {
-        process.exit(0);
-      }
-
       //Get the data of running builds and handle the spinners.
       [buildData, totalBuilds] = await getBranchData(
         BITRISE_BUILDS_URL,
-        BRANCH,
+        branchName,
         0
       );
       await forEach(
         buildData,
         async (build) => await checkIfNewSpinnerIsNeeded(build)
       );
+
+      //If no builds are running the currentBuilds object should be empty and the program to stop.
+      if (_.isEmpty(currentBuilds)) {
+        process.exit(0);
+      }
     });
   }
 };
