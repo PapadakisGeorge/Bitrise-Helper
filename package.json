@@ -9,7 +9,7 @@
     "trigger": "node trigger.js",
     "abort": "node abort.js",
     "test": "jest",
-    "help" : "node help.js"
+    "help": "node help.js"
   },
   "keywords": [],
   "author": "",
