@@ -1,3 +1,5 @@
+const chalk = require("chalk");
+const { TEST_SUITES } = require("../model/model");
 const { triggerBuild } = require("./triggerBuild");
 const { watcherStart } = require("./watcherStart");
 const { createTriggerPayload } = require("../utils/createTriggerPayload");
@@ -11,7 +13,7 @@ const triggerStart = async (initialWorkflow = "") => {
   let workflow = initialWorkflow;
   let skipTests;
 
-  const branchName = await askForBranch();
+  const branchName = await askForBranch("trigger");
 
   if (!initialWorkflow) {
     workflow = await askForWorkflow();
@@ -25,12 +27,31 @@ const triggerStart = async (initialWorkflow = "") => {
     `Triggering ${workflow} for branch ${branchName}. ${skippingTestsText}`
   );
 
+  let selectedTestSuite;
+  let testSuiteTag;
+  if (skipTests === "false") {
+    selectedTestSuite =  await askQuestionList("testSuite",
+        "Do you want to run a specific test suite?",
+        [...TEST_SUITES,'ALL']);
+
+    if (selectedTestSuite === 'ALL') {
+      console.log(chalk.blue("Will not run a specific test suite."));
+    } else {
+      testSuiteTag = `@${selectedTestSuite}`;
+      console.log(chalk.blue(`Will run tests for ${selectedTestSuite}.`));
+    }
+  }
+
   const envVariables = [
     {
       is_expand: true,
       mapped_to: "SKIP_TESTS",
       value: skipTests,
     },
+      ...(selectedTestSuite === 'ALL' ? [] : [{
+        mapped_to: "TEST_SUITE_NAME",
+        value: testSuiteTag,
+      }])
   ];
   const payload = createTriggerPayload(branchName, workflow, envVariables);
 
