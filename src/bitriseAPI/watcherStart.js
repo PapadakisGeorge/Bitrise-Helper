@@ -108,17 +108,13 @@ const watcherStart = async (initialBranch = "") => {
             spinners
           );
           delete currentBuilds[buildNumber];
-          if (buildStatus === 2) {
+            const statusText = buildStatus === 2 ? 'failed' : 'finished';
+            const buildNotificationText = `Build ${buildNumber} on workflow ${buildData.triggered_workflow} for branch ${branchName} has ${statusText}!`;
+            const buildNotificationAnnouncement = `Build ${buildNumber} has ${statusText}!`;
             shellExec(
-              'osascript -e "display notification \\"Build failed!\\" with title \\"BITRISE BUILD\\""'
+              `osascript -e "display notification \\"${buildNotificationText}\\" with title \\"BITRISE BUILD\\""`
             );
-            shellExec("say Builds failed!");
-          } else {
-            shellExec(
-              'osascript -e "display notification \\"Build finished!\\" with title \\"BITRISE BUILD\\""'
-            );
-            shellExec("say Builds finished!");
-          }
+            shellExec(`say ${buildNotificationAnnouncement}`);
         } else {
           const finishTime = currentBuilds[buildNumber].finishTime - 1;
           currentBuilds[buildNumber].finishTime = finishTime;
