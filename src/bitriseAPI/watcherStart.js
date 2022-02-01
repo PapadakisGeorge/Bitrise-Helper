@@ -1,5 +1,5 @@
 const { getData } = require("./dataFetcher");
-const { getBranchData } = require("../utils/getDataWithOptions");
+const { getBranchData } = require("./getDataWithOptions");
 const {
   stopSpinner,
   updateSpinnerText,
