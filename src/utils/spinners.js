@@ -19,7 +19,7 @@ const spinnerText = (build, finishTime) => {
   if (Number(finishTime) > 1) {
     return `${buildWorkflowID} workflow for ${branchName} (build number ${buildNumber}) in progress, ETC ${finishTime} minutes.\nMore info: ${BITRISE_APP_URL}${buildPartialURL}`;
   } else if (Number(finishTime) < -10) {
-    return `${buildWorkflowID} workflow for ${branchName} (build number ${buildNumber}) in progress, but is taking to long.\nCheck if everything is alright here: ${BITRISE_APP_URL}${buildPartialURL}`;
+    return `${buildWorkflowID} workflow for ${branchName} (build number ${buildNumber}) in progress, but is taking too long.\nCheck if everything is alright here: ${BITRISE_APP_URL}${buildPartialURL}`;
   } else {
     return `${buildWorkflowID} workflow for ${branchName} (build number ${buildNumber}) in progress, will finish soon.\nMore info: ${BITRISE_APP_URL}${buildPartialURL}`;
   }
