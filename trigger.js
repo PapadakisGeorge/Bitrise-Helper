@@ -1,5 +1,5 @@
-const { triggerStart } = require('./src/bitriseAPI/triggerStart');
+const { triggerStart } = require("./src/bitriseAPI/triggerStart");
 
 (async () => {
-    await triggerStart();
+  await triggerStart();
 })();
