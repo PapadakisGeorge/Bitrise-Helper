@@ -10,7 +10,6 @@ const {
   CHOICES,
   VALIDATION_NUMBER,
 } = require("./mocks/question.mocks");
-const { forEach } = require("p-iteration");
 const stdin = require("mock-stdin").stdin();
 
 const userInputSimulation = (input) =>

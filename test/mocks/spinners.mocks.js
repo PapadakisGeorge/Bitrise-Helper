@@ -7,17 +7,19 @@ const validBuildParameters = (buildNumber) => {
   };
 };
 
-const spinnerObject = (text) => {
-  return {
+const spinnerObject = (number, status, text) => {
+  let result = {};
+  result[number] = {
     color: "cyan",
     succeedColor: "green",
     failColor: "red",
     spinnerColor: "greenBright",
     succeedPrefix: "✓",
     failPrefix: "✖",
-    status: "spinning",
+    status: status,
     text: text,
   };
+  return result;
 };
 
 const SPINNER_TEXT_HAPPY_PATH_INPUTS = [
@@ -44,21 +46,21 @@ const SPINNER_TEXT_HAPPY_PATH_INPUTS = [
 const START_SPINNER_HAPPY_PATH_INPUTS = {
   build: validBuildParameters(6666),
   finishTime: "1",
-  expectedResult: {
-    "spinner-6666": spinnerObject(
-      "A valid workflow workflow for valid branch (build number 6666) in progress, will finish soon.\nMore info: https://app.bitrise.io/app/af50b4926a122ad0#/builds/aValidSlug"
-    ),
-  },
+  expectedResult: spinnerObject(
+    "spinner-6666",
+    "spinning",
+    "A valid workflow workflow for valid branch (build number 6666) in progress, will finish soon.\nMore info: https://app.bitrise.io/app/af50b4926a122ad0#/builds/aValidSlug"
+  ),
 };
 
 const UPDATE_SPINNER_HAPPY_PATH_INPUTS = {
   build: validBuildParameters(6666),
   finishTime: "3",
-  expectedResult: {
-    "spinner-6666": spinnerObject(
-      "A valid workflow workflow for valid branch (build number 6666) in progress, ETC 3 minutes.\nMore info: https://app.bitrise.io/app/af50b4926a122ad0#/builds/aValidSlug"
-    ),
-  },
+  expectedResult: spinnerObject(
+    "spinner-6666",
+    "spinning",
+    "A valid workflow workflow for valid branch (build number 6666) in progress, ETC 3 minutes.\nMore info: https://app.bitrise.io/app/af50b4926a122ad0#/builds/aValidSlug"
+  ),
 };
 
 const STOP_SPINNER_SUCCESS = {
@@ -68,6 +70,8 @@ const STOP_SPINNER_SUCCESS = {
   buildStatus: "1",
   buildURL: "aValidSlug",
   expectedResult: spinnerObject(
+    "spinner-6668",
+    "succeed",
     "A valid workflow 6668 succeeded! More info: https://app.bitrise.io/app/af50b4926a122ad0#/builds/aValidSlug"
   ),
 };
@@ -77,11 +81,11 @@ const STOP_SPINNER_FAILURE = {
   buildType: "A valid workflow",
   buildStatus: "2",
   buildURL: "aValidSlug",
-  expectedResult: {
-    "spinner-6669": spinnerObject(
-      "A valid workflow 6669 failed! More info: https://app.bitrise.io/app/af50b4926a122ad0#/builds/aValidSlug"
-    ),
-  },
+  expectedResult: spinnerObject(
+    "spinner-6669",
+    "succeed",
+    "A valid workflow 6669 failed! More info: https://app.bitrise.io/app/af50b4926a122ad0#/builds/aValidSlug"
+  ),
 };
 const STOP_SPINNER_ABORTED = {
   build: validBuildParameters(66610),
@@ -89,23 +93,23 @@ const STOP_SPINNER_ABORTED = {
   buildType: "A valid workflow",
   buildStatus: "3",
   buildURL: "aValidSlug",
-  expectedResult: {
-    "spinner-66610": spinnerObject(
-      "A valid workflow 66610 was aborted! More info: https://app.bitrise.io/app/af50b4926a122ad0#/builds/aValidSlug"
-    ),
-  },
+  expectedResult: spinnerObject(
+    "spinner-66610",
+    "succeed",
+    "A valid workflow 66610 was aborted! More info: https://app.bitrise.io/app/af50b4926a122ad0#/builds/aValidSlug"
+  ),
 };
 const STOP_SPINNER_ABORTED_WITH_SUCCESS = {
-  build: validBuildParameters(666611),
+  build: validBuildParameters(66611),
   buildNumber: "66611",
   buildType: "A valid workflow",
   buildStatus: "4",
   buildURL: "aValidSlug",
-  expectedResult: {
-    "spinner-66611": spinnerObject(
-      "A valid workflow 66611 was aborted with success! More info: https://app.bitrise.io/app/af50b4926a122ad0#/builds/aValidSlug"
-    ),
-  },
+  expectedResult: spinnerObject(
+    "spinner-66611",
+    "succeed",
+    "A valid workflow 66611 was aborted with success! More info: https://app.bitrise.io/app/af50b4926a122ad0#/builds/aValidSlug"
+  ),
 };
 
 module.exports = {
