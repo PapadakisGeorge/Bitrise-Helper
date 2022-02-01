@@ -44,7 +44,7 @@ const watcherStart = async (initialBranch = "") => {
         "Select the branch you want to watch:",
         activeBranchNamesList
       );
-    } else branchName = await askForBranch();
+    } else branchName = await askForBranch("watch");
   }
   console.log(
     chalk.blue(
