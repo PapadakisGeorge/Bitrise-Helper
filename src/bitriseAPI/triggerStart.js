@@ -28,32 +28,42 @@ const triggerStart = async (initialWorkflow = "") => {
   );
 
   let selectedTestSuite;
-  let testSuiteTag;
-  if (skipTests === "false") {
-    selectedTestSuite =  await askQuestionList("testSuite",
-        "Do you want to run a specific test suite?",
-        [...TEST_SUITES,'ALL']);
-
-    if (selectedTestSuite === 'ALL') {
-      console.log(chalk.blue("Will not run a specific test suite."));
-    } else {
-      testSuiteTag = `@${selectedTestSuite}`;
-      console.log(chalk.blue(`Will run tests for ${selectedTestSuite}.`));
-    }
-  }
-
-  const envVariables = [
+  let envVariables = [
     {
       is_expand: true,
       mapped_to: "SKIP_TESTS",
       value: skipTests,
     },
-      ...(selectedTestSuite === 'ALL' ? [] : [{
-        mapped_to: "TEST_SUITE_NAME",
-        value: testSuiteTag,
-      }])
   ];
-  const payload = createTriggerPayload(branchName, workflow, envVariables);
+  let bitriseMessage = "";
+  if (skipTests === "true") {
+    bitriseMessage = "Build will not run tests";
+  } else {
+    selectedTestSuite = await askQuestionList(
+      "testSuite",
+      "Do you want to run a specific test suite?",
+      [...TEST_SUITES, "ALL"]
+    );
+
+    if (selectedTestSuite === "ALL") {
+      console.log(chalk.blue("Will not run a specific test suite."));
+    } else {
+      const testSuiteTagVariable = {
+        mapped_to: "TEST_SUITE_NAME",
+        value: `@${selectedTestSuite}`,
+      };
+      envVariables.push(testSuiteTagVariable);
+      bitriseMessage = `Build will run test suite ${selectedTestSuite}`;
+      console.log(chalk.blue(`Will run tests for @${selectedTestSuite}.`));
+    }
+  }
+
+  const payload = createTriggerPayload(
+    branchName,
+    workflow,
+    envVariables,
+    bitriseMessage
+  );
 
   let response = await triggerBuild(payload);
   if (response.statusCode > 299) {
