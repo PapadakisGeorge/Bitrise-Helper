@@ -12,7 +12,7 @@ const getBranchData = async (url, branch, status) => {
     build.branch.includes(branch)
   );
 
-  return [branchData, JSON.parse(rawData.body).paging.total_item_count];
+  return [branchData, branchData.length];
 };
 
 /**
