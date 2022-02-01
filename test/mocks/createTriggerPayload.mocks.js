@@ -1,5 +1,3 @@
-const { ValidationError } = require("../../src/utils/validateInputs");
-
 const VALID_INPUTS = {
   branch: "Valid branch input",
   workflow: "Valid workflow input",
