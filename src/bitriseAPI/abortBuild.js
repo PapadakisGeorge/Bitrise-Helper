@@ -63,6 +63,7 @@ const abortBuild = async () => {
       abort_reason: abortReason,
     },
   };
+
   let response = await abort(payload);
   if (response.statusCode > 299) {
     console.error("Something went wrong");
