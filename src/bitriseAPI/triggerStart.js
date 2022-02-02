@@ -42,11 +42,11 @@ const triggerStart = async (initialWorkflow = "") => {
     selectedTestSuite = await askQuestionList(
       "testSuite",
       "Do you want to run a specific test suite?",
-      [...TEST_SUITES, "ALL"]
+      ["ALL", ...TEST_SUITES]
     );
 
     if (selectedTestSuite === "ALL") {
-      console.log(chalk.blue("Will not run a specific test suite."));
+      console.log(chalk.blue("Build will run all the test suites."));
     } else {
       const testSuiteTagVariable = {
         mapped_to: "TEST_SUITE_NAME",
@@ -54,7 +54,9 @@ const triggerStart = async (initialWorkflow = "") => {
       };
       envVariables.push(testSuiteTagVariable);
       bitriseMessage = `Build will run test suite ${selectedTestSuite}`;
-      console.log(chalk.blue(`Will run tests for @${selectedTestSuite}.`));
+      console.log(
+        chalk.blue(`Build will run tests for @${selectedTestSuite}.`)
+      );
     }
   }
 
