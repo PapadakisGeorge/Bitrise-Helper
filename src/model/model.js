@@ -3,7 +3,7 @@ const WORKFLOWS = {
   WORKFLOW_IOS: "Workflow_IOS",
   WORKFLOW_ANDROID_EDGE: "Workflow_Android_Edge",
   WORKFLOW_IOS_EDGE: "Workflow_IOS_Edge",
-  WORKFLOW_UNIT_TESTS: "Workflow_Unit_Tests"
+  WORKFLOW_UNIT_TESTS: "Workflow_Unit_Tests",
 };
 
 const TEST_SUITES = [
@@ -21,6 +21,29 @@ const TEST_SUITES = [
   "spendingLimits",
   "schedulePlay",
 ];
+
+const WORKFLOW_OPTIONS = {
+  [WORKFLOWS.WORKFLOW_ANDROID]: {
+    testSuites: TEST_SUITES,
+    canSkipTests: true,
+  },
+  [WORKFLOWS.WORKFLOW_IOS]: {
+    testSuites: TEST_SUITES,
+    canSkipTests: true,
+  },
+  [WORKFLOWS.WORKFLOW_ANDROID_EDGE]: {
+    testSuites: TEST_SUITES,
+    canSkipTests: true,
+  },
+  [WORKFLOWS.WORKFLOW_IOS_EDGE]: {
+    testSuites: TEST_SUITES,
+    canSkipTests: true,
+  },
+  [WORKFLOWS.WORKFLOW_UNIT_TESTS]: {
+    testSuites: [],
+    canSkipTests: false,
+  },
+};
 
 const RESERVED_SESSIONS = Object.freeze({
   Workflow_Android: 15,
@@ -47,4 +70,5 @@ module.exports = {
   STATUSES,
   RESERVED_SESSIONS,
   TEST_SUITES,
+  WORKFLOW_OPTIONS,
 };

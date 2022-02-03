@@ -1,5 +1,5 @@
 const chalk = require("chalk");
-const { TEST_SUITES } = require("../model/model");
+const { WORKFLOW_OPTIONS } = require("../model/model");
 const { triggerBuild } = require("./triggerBuild");
 const { watcherStart } = require("./watcherStart");
 const { createTriggerPayload } = require("../utils/createTriggerPayload");
@@ -18,7 +18,10 @@ const triggerStart = async (initialWorkflow = "") => {
   if (!initialWorkflow) {
     workflow = await askForWorkflow();
   }
-  const skipTestsQuestion = await askQuestionList("skipTests", "Skip tests?");
+
+  const skipTestsQuestion = WORKFLOW_OPTIONS[workflow].canSkipTests
+    ? await askQuestionList("skipTests", "Skip tests?")
+    : "no";
 
   skipTests = skipTestsQuestion === "Yes" ? "true" : "false";
   const skippingTestsText =
@@ -39,24 +42,26 @@ const triggerStart = async (initialWorkflow = "") => {
   if (skipTests === "true") {
     bitriseMessage = "Build will not run tests";
   } else {
-    selectedTestSuite = await askQuestionList(
-      "testSuite",
-      "Do you want to run a specific test suite?",
-      ["ALL", ...TEST_SUITES]
-    );
-
-    if (selectedTestSuite === "ALL") {
-      console.log(chalk.blue("Build will run all the test suites."));
-    } else {
-      const testSuiteTagVariable = {
-        mapped_to: "TEST_SUITE_NAME",
-        value: `@${selectedTestSuite}`,
-      };
-      envVariables.push(testSuiteTagVariable);
-      bitriseMessage = `Build will run test suite ${selectedTestSuite}`;
-      console.log(
-        chalk.blue(`Build will run tests for @${selectedTestSuite}.`)
+    if (WORKFLOW_OPTIONS[workflow].testSuites.length) {
+      selectedTestSuite = await askQuestionList(
+        "testSuite",
+        "Do you want to run a specific test suite?",
+        ["ALL", ...WORKFLOW_OPTIONS[workflow].testSuites]
       );
+
+      if (selectedTestSuite === "ALL") {
+        console.log(chalk.blue("Build will run all the test suites."));
+      } else {
+        const testSuiteTagVariable = {
+          mapped_to: "TEST_SUITE_NAME",
+          value: `@${selectedTestSuite}`,
+        };
+        envVariables.push(testSuiteTagVariable);
+        bitriseMessage = `Build will run test suite ${selectedTestSuite}`;
+        console.log(
+          chalk.blue(`Build will run tests for @${selectedTestSuite}.`)
+        );
+      }
     }
   }
 
