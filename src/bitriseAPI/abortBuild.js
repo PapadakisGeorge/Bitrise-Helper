@@ -29,9 +29,10 @@ const findBuildNumber = async () => {
       "number"
     );
 
-    if (buildNumbers.includes(buildNumber)) {
-      return builds.filter((build) => build.build_number === buildNumber)[0]
-        .slug;
+    if (buildNumbers.includes(Number(buildNumber))) {
+      return builds.filter(
+        (build) => build.build_number === Number(buildNumber)
+      )[0].slug;
     } else {
       console.log(
         chalk.red(
