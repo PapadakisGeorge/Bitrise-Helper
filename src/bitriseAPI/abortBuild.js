@@ -6,9 +6,13 @@ const chalk = require("chalk");
 const { map } = require("p-iteration");
 
 const findBuildNumber = async () => {
-  let buildNumber;
   const builds = await fetchActiveBuilds();
   const buildNumbers = await map(builds, async (build) => build.build_number);
+  const buildNumbersList = await map(
+    builds,
+    async (build) =>
+      `${build.build_number} - ${build.branch} - ${build.triggered_workflow}`
+  );
 
   const buildNumberKnownInputQuestion = await askQuestionList(
     "buildNumberKnown",
@@ -25,9 +29,10 @@ const findBuildNumber = async () => {
       "number"
     );
 
-    if (buildNumbers.includes(buildNumber)) {
-      return builds.filter((build) => build.buildNumber == buildNumber)[0]
-        .buildSlug;
+    if (buildNumbers.includes(Number(buildNumber))) {
+      return builds.filter(
+        (build) => build.build_number === Number(buildNumber)
+      )[0].slug;
     } else {
       console.log(
         chalk.red(
@@ -37,15 +42,13 @@ const findBuildNumber = async () => {
       process.exit(0);
     }
   } else {
-    buildNumber = await askQuestionList(
+    const buildSelection = await askQuestionList(
       "buildNumber",
       "Please select the build you want to abort:\n",
-      buildNumbers
+      buildNumbersList
     );
-
-    return builds.filter(
-      (build) => build.buildNumber == buildNumbers[buildNumberInput]
-    )[0].buildSlug;
+    const buildNumber = Number(buildSelection.split(" - ")[0]);
+    return builds.filter((build) => build.build_number === buildNumber)[0].slug;
   }
 };
 
