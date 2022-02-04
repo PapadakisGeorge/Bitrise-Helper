@@ -14,7 +14,7 @@ const runSauceLabsTest = async () => {
   const testSuite = await askQuestionList(
     "testSuite",
     "Which test suite are you going to run",
-    ["Android", "iOS", "iOS edge", "Android edge"]
+    ["android", "ios", "ios edge", "android edge"]
   );
 
   const branch = await askQuestionInput(
@@ -22,7 +22,7 @@ const runSauceLabsTest = async () => {
     "Which branch?\n",
     "Invalid branch"
   );
-  const flattenedType = testSuite.includes("iOS") ? "ios" : "android";
+  const flattenedType = testSuite.includes("ios") ? "ios" : "android";
 
   const sauce_credentials = {
     username: process.env.SAUCE_USERNAME,
@@ -100,23 +100,24 @@ const runSauceLabsTest = async () => {
   let confFilePath;
   let confName;
   let tempConfName;
+
   switch (testSuite) {
-    case "Android":
+    case "android":
       confName = "wdio.android.sauce.conf.js";
       confFilePath = `${confFileDirPath}${confName}`;
       tempConfName = `temp.${confName}`;
       break;
-    case "Android edge":
+    case "android edge":
       confName = "wdio.android.edge.conf.js";
       confFilePath = `${confFileDirPath}${confName}`;
       confName = `temp.${confName}`;
       break;
-    case "iOS":
+    case "ios":
       confName = "wdio.ios.sauce.conf.js";
       confFilePath = `${confFileDirPath}${confName}`;
       tempConfName = `temp.${confName}`;
       break;
-    case "iOS edge":
+    case "ios edge":
       confName = "wdio.ios.sauce.edge.conf.js";
       confFilePath = `${confFileDirPath}${confName}`;
       tempConfName = `temp.${confName}`;
@@ -135,7 +136,7 @@ const runSauceLabsTest = async () => {
 
   fs.readFile(confFilePath, "utf-8", function (err, data) {
     if (err) throw err;
-    const newValue = testSuite.includes("Android")
+    const newValue = testSuite.includes("android")
       ? data.replace(/app-release-[\D\d.-]+\.apk/gim, chooseSauceLabsApp)
       : data.replace(
           /CtpIENativeApp-[\D\d.-]+\.app\.zip/gim,
@@ -147,7 +148,7 @@ const runSauceLabsTest = async () => {
   });
 
   runChildProcess(
-    `sh ./src/shellScripts/new.sh "cd ${process.env.PROJECT_PATH}/ie-native-app && ${process.env.PROJECT_PATH}/ie-native-app/node_modules/.bin/wdio test/conf/${tempConfName} --spec ${testName} && rm ${process.env.PROJECT_PATH}ie-native-app/test/conf/${tempConfName}"`
+    `sh ./src/shellScripts/new.sh "cd ${process.env.PROJECT_PATH}/ie-native-app && ${process.env.PROJECT_PATH}/ie-native-app/node_modules/.bin/wdio test/conf/${tempConfName} --spec ${testName} && rm ${process.env.PROJECT_PATH}/ie-native-app/test/conf/${tempConfName}"`
   );
 };
 
