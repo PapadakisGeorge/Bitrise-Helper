@@ -10,7 +10,7 @@ const help = async () => {
     availableCommands
   );
 
-  let commandToExecute = `npm run ${availableCommands[commandToRun]}`;
+  let commandToExecute = `npm run ${commandToRun}`;
   runChildProcess(commandToExecute);
 };
 
