@@ -14,7 +14,7 @@ const runSauceLabsTest = async () => {
   const testSuite = await askQuestionList(
     "testSuite",
     "Which test suite are you going to run",
-    ["Android", "iOS", "iOS edge", "Android Edge"]
+    ["Android", "iOS", "iOS edge", "Android edge"]
   );
 
   const branch = await askQuestionInput(
