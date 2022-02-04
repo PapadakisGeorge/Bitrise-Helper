@@ -36,7 +36,10 @@ const runSauceLabsTest = async () => {
     Authorization: "Basic",
     ...sauce_credentials,
   };
-  const searchOptions = [["query", branch]];
+  const searchOptions = [
+    ["query", branch],
+    ["per_page", "1000"],
+  ];
 
   const searchParams = new URLSearchParams(searchOptions);
 
