@@ -8,6 +8,7 @@
     "check": "node capacityCheck.js",
     "trigger": "node trigger.js",
     "abort": "node abort.js",
+    "runTest": "node runSauceLabsTest.js",
     "help": "node help.js"
   },
   "keywords": [],
