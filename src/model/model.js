@@ -46,10 +46,10 @@ const WORKFLOW_OPTIONS = {
 };
 
 const RESERVED_SESSIONS = Object.freeze({
-  Workflow_Android: 15,
-  Workflow_IOS: 20,
-  Workflow_Android_Edge: 10,
-  Workflow_IOS_Edge: 30,
+  [WORKFLOWS.WORKFLOW_ANDROID]: 15,
+  [WORKFLOWS.WORKFLOW_IOS]: 20,
+  [WORKFLOWS.WORKFLOW_ANDROID_EDGE]: 10,
+  [WORKFLOWS.WORKFLOW_IOS_EDGE]: 30,
   Execute_Android_Tests: 15,
   Execute_Android_Edge_Tests: 10,
   Execute_IOS_Tests: 20,
