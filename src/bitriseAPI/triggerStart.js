@@ -45,7 +45,7 @@ const triggerStart = async (initialWorkflow = "") => {
     if (WORKFLOW_OPTIONS[workflow].testSuites.length) {
       selectedTestSuite = await askQuestionList(
         "testSuite",
-        "Do you want to run a specific test suite?",
+        "Do you want to run a specific test suite? (Type to narrow the list)",
         ["ALL", ...WORKFLOW_OPTIONS[workflow].testSuites]
       );
 

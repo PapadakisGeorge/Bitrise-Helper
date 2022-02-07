@@ -57,7 +57,7 @@ const availableWorkflowsMatrix = Object.values(WORKFLOWS);
 const askForWorkflow = async () => {
   return await askQuestionList(
     "workflow",
-    "Which workflow do you want to trigger?",
+    "Which workflow do you want to trigger? (Type to narrow the list)",
     availableWorkflowsMatrix
   );
 };

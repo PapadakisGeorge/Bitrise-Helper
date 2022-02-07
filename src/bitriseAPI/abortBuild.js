@@ -44,7 +44,7 @@ const findBuildNumber = async () => {
   } else {
     const buildSelection = await askQuestionList(
       "buildNumber",
-      "Please select the build you want to abort:\n",
+      "Please select the build you want to abort: (Type to narrow the list)\n",
       buildNumbersList
     );
     const buildNumber = Number(buildSelection.split(" - ")[0]);

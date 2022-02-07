@@ -6,7 +6,7 @@ const help = async () => {
   const availableCommands = Object.keys(packageJSON.scripts);
   let commandToRun = await askQuestionList(
     "search-list",
-    "Which command do you wish to run?",
+    "Which command do you wish to run? (Type to narrow the list)\n",
     availableCommands
   );
 
