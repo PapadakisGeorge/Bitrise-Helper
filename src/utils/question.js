@@ -2,6 +2,8 @@ const chalk = require("chalk");
 const inquirer = require("inquirer");
 const { WORKFLOWS } = require("../model/model");
 
+inquirer.registerPrompt("search-list", require("inquirer-search-list"));
+
 const validator = (answer, type) => {
   const object = {
     number: isNaN(Number(answer)),
@@ -14,15 +16,15 @@ const askQuestionList = async (name, message, choices = ["Yes", "No"]) => {
   const question = {
     name,
     message,
-    type: "list",
-    choices: [...choices, 'Cancel'],
+    type: "search-list",
+    choices: [...choices, "Cancel"],
     loop: false,
   };
 
   const result = await inquirer.prompt([question]);
-  if(result[name] === 'Cancel') {
-    console.log(chalk.yellow('Aborting task...'));
-    console.log(chalk.green('Task aborted successfully!'));
+  if (result[name] === "Cancel") {
+    console.log(chalk.yellow("Aborting task..."));
+    console.log(chalk.green("Task aborted successfully!"));
     process.exit(0);
   }
   return result[name];
@@ -62,9 +64,9 @@ const askForWorkflow = async () => {
 
 const askForBranch = async (message) => {
   const MESSAGES = {
-    "trigger": "Enter the branch name you want to trigger:\n",
-    "watch": "Enter the branch name, or part of it, that you want to watch:\n"
-  }
+    trigger: "Enter the branch name you want to trigger:\n",
+    watch: "Enter the branch name, or part of it, that you want to watch:\n",
+  };
   return await askQuestionInput(
     "branch",
     MESSAGES[message],
