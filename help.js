@@ -5,8 +5,8 @@ const { askQuestionList } = require("./src/utils/question");
 const help = async () => {
   const availableCommands = Object.keys(packageJSON.scripts);
   let commandToRun = await askQuestionList(
-    "list",
-    "Which command do you wish to run?",
+    "search-list",
+    "Which command do you wish to run? (Type to narrow the list)\n",
     availableCommands
   );
 
