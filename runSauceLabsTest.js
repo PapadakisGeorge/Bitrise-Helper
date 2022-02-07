@@ -3,6 +3,8 @@ const { askQuestionList, askQuestionInput } = require("./src/utils/question");
 const got = require("got");
 const chalk = require("chalk");
 const Spinners = require("spinnies");
+const fs = require("fs");
+const { getAllFeatureNames } = require("./src/utils/getFeatures");
 
 function sleep(ms) {
   return new Promise((resolve) => {
@@ -127,12 +129,13 @@ const runSauceLabsTest = async () => {
   }
   const tempConfFilePath = `${confFileDirPath}${tempConfName}`;
 
-  const testName = await askQuestionInput(
+  const featuresList = await getAllFeatureNames(testSuite);
+
+  const testName = await askQuestionList(
     "testName",
-    "Which test?\n",
-    "Invalid test"
+    "Which test? \n",
+    featuresList
   );
-  const fs = require("fs");
 
   fs.readFile(confFilePath, "utf-8", function (err, data) {
     if (err) throw err;
