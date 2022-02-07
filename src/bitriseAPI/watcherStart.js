@@ -25,7 +25,7 @@ const watcherStart = async (initialBranch = "") => {
   if (!branchName) {
     let manualOrListQuestion = await askQuestionList(
       "manualOrList",
-      "Do you want to select a branch from a list or enter the branch name manually?",
+      "Do you want to select a branch from a list or enter the branch name manually? (Type to narrow the list)",
       [LIST_OPTION, MANUAL_INPUT_OPTION]
     );
 
@@ -41,7 +41,7 @@ const watcherStart = async (initialBranch = "") => {
       const activeBranchNamesList = _.uniq(activeBuilds);
       branchName = await askQuestionList(
         "branch",
-        "Select the branch you want to watch:",
+        "Select the branch you want to watch: (Type to narrow the list)",
         activeBranchNamesList
       );
     } else branchName = await askForBranch("watch");
@@ -108,13 +108,13 @@ const watcherStart = async (initialBranch = "") => {
             spinners
           );
           delete currentBuilds[buildNumber];
-            const statusText = buildStatus === 2 ? 'failed' : 'finished';
-            const buildNotificationText = `Build ${buildNumber} on workflow ${buildData.triggered_workflow} for branch ${branchName} has ${statusText}!`;
-            const buildNotificationAnnouncement = `Build ${buildNumber} has ${statusText}!`;
-            shellExec(
-              `osascript -e "display notification \\"${buildNotificationText}\\" with title \\"BITRISE BUILD\\""`
-            );
-            shellExec(`say ${buildNotificationAnnouncement}`);
+          const statusText = buildStatus === 2 ? "failed" : "finished";
+          const buildNotificationText = `Build ${buildNumber} on workflow ${buildData.triggered_workflow} for branch ${branchName} has ${statusText}!`;
+          const buildNotificationAnnouncement = `Build ${buildNumber} has ${statusText}!`;
+          shellExec(
+            `osascript -e "display notification \\"${buildNotificationText}\\" with title \\"BITRISE BUILD\\""`
+          );
+          shellExec(`say ${buildNotificationAnnouncement}`);
         } else {
           const finishTime = currentBuilds[buildNumber].finishTime - 1;
           currentBuilds[buildNumber].finishTime = finishTime;

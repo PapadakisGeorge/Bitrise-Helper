@@ -31,7 +31,7 @@ const fetchBranchBuilds = async ({ initialBranch, initialStatus = "" }) => {
 
     const verboseStatus = await askQuestionList(
       "status",
-      "Which build status do you want to fetch?\n",
+      "Which build status do you want to fetch? (Type to narrow the list)\n",
       Object.keys(STATUSES)
     );
     status = STATUSES[Object.keys(STATUSES)[verboseStatus]];
