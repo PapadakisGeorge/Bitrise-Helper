@@ -78,7 +78,7 @@ const abortBuild = async () => {
 
 const abort = async (payload) => {
   return await POSTRequestWrapper(
-    `https://api.bitrise.io/v0.1/apps/af50b4926a122ad0/builds/${payload.buildSlug}/abort`,
+    `https://api.bitrise.io/v0.1/apps/${process.env.APP_SLUG}/builds/${payload.buildSlug}/abort`,
     payload["build-abort-params"]
   );
 };

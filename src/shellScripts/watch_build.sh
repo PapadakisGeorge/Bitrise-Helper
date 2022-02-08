@@ -11,7 +11,7 @@ fi
 
 echo "Getting builds running on Bitrise of ${BITRISE_GIT_BRANCH} currently running"
 
-response=$(curl -s -X GET -H "Authorization: ${ACCESS_TOKEN}" "https://api.bitrise.io/v0.1/apps/af50b4926a122ad0/builds?branch=${BITRISE_GIT_BRANCH}&status=0")
+response=$(curl -s -X GET -H "Authorization: ${ACCESS_TOKEN}" "https://api.bitrise.io/v0.1/apps/${APP_SLUG}/builds?branch=${BITRISE_GIT_BRANCH}&status=0")
 if [[ ${BUILDS_RESPONSE} == *"\"total_item_count\":0"* ]]; then
   echo "No builds are running on Bitrise"
   exit 0
@@ -24,7 +24,7 @@ while [[ ${response} != *"\"total_item_count\":0"* ]]; do
     echo 'Builds still in progress'
   fi
   sleep 60
-  response=$(curl -s -X GET -H "Authorization: ${ACCESS_TOKEN}" "https://api.bitrise.io/v0.1/apps/af50b4926a122ad0/builds?branch=${BITRISE_GIT_BRANCH}&status=0")
+  response=$(curl -s -X GET -H "Authorization: ${ACCESS_TOKEN}" "https://api.bitrise.io/v0.1/apps/${APP_SLUG}/builds?branch=${BITRISE_GIT_BRANCH}&status=0")
 done
 
 echo "Builds finished!"

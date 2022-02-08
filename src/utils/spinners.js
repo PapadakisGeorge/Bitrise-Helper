@@ -1,5 +1,5 @@
 const { validateInputs } = require("./validateInputs");
-const BITRISE_APP_URL = "https://app.bitrise.io/app/af50b4926a122ad0#/builds/";
+const BITRISE_APP_URL = `https://app.bitrise.io/app/${process.env.APP_SLUG}#/builds/`;
 
 /**
  * @param build An object containing the build data.
