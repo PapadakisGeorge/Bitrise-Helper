@@ -173,13 +173,10 @@ const runSauceLabsTest = async () => {
     if (askForRerun === "No") {
       shouldRun = false;
       runChildProcess(
-        `sh ./src/shellScripts/new.sh "${process.env.PROJECT_PATH}/ie-native-app && rm ${process.env.PROJECT_PATH}/ie-native-app/test/conf/${tempConfName}"`
+        `rm ${process.env.PROJECT_PATH}/ie-native-app/test/conf/${tempConfName}`
       );
     } else {
       testName = await requireTestName(testSuite);
-      runChildProcess(
-        `sh ./src/shellScripts/new.sh "${process.env.PROJECT_PATH}/ie-native-app/node_modules/.bin/wdio test/conf/${tempConfName} --spec ${testName}"`
-      );
     }
   }
 };
