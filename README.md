@@ -11,6 +11,8 @@ More information can be found here https://api-docs.bitrise.io/#/builds/build-lo
 
 ```APP_SLUG```: the app's partial URL.
 
+```PROJECT_PATH```: the path of the main project
+
 Current scripts:
 - ```npm run check```:
   Check if there is capacity for your build.
@@ -20,5 +22,7 @@ Current scripts:
   Trigger a build.
 - ```npm run abort```:
   Abort a build.
+- ```npm run runTest```:
+    Run a test in SauceLabs
 - ```npm run help```:
   List of available commands

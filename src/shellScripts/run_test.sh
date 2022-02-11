@@ -14,9 +14,10 @@ new_window() {
 
 export BITRISE_GIT_BRANCH=$(git branch --show-current)
 export GIT_HASH=$(git rev-parse ${BITRISE_GIT_BRANCH})
-PLATFORM=$1
-TEST=$2
 
+node runTest.js
+
+echo "Variable: ${testSuite}"
 ECHO_GREEN='\033[0;32m'
 ECHO_RED='\033[0;31m'
 ECHO_PURPLE='\033[0;35m'
